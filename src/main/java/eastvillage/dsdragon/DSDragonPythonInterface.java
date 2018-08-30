@@ -1,16 +1,16 @@
-package rlbotexample;
+package eastvillage.dsdragon;
 
 import rlbot.Bot;
 import rlbot.manager.BotManager;
 import rlbot.pyinterop.DefaultPythonInterface;
 
-public class SamplePythonInterface extends DefaultPythonInterface {
+public class DSDragonPythonInterface extends DefaultPythonInterface {
 
-    public SamplePythonInterface(BotManager botManager) {
+    public DSDragonPythonInterface(BotManager botManager) {
         super(botManager);
     }
 
     protected Bot initBot(int index, String botType, int team) {
-        return new SampleBot(index);
+        return new DSDragonBot(index);
     }
 }

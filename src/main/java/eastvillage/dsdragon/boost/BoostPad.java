@@ -1,7 +1,7 @@
-package rlbotexample.boost;
+package eastvillage.dsdragon.boost;
 
 
-import rlbotexample.vector.Vector3;
+import eastvillage.dsdragon.vector.Vector3;
 
 public class BoostPad {
 

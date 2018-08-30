@@ -1,23 +1,23 @@
-package rlbotexample;
+package eastvillage.dsdragon;
 
+import eastvillage.dsdragon.boost.BoostManager;
+import eastvillage.dsdragon.input.CarData;
+import eastvillage.dsdragon.input.DataPacket;
+import eastvillage.dsdragon.output.ControlsOutput;
+import eastvillage.dsdragon.vector.Vector2;
 import rlbot.Bot;
 import rlbot.ControllerState;
 import rlbot.flat.GameTickPacket;
 import rlbot.manager.BotLoopRenderer;
 import rlbot.render.Renderer;
-import rlbotexample.boost.BoostManager;
-import rlbotexample.input.CarData;
-import rlbotexample.input.DataPacket;
-import rlbotexample.output.ControlsOutput;
-import rlbotexample.vector.Vector2;
 
 import java.awt.*;
 
-public class SampleBot implements Bot {
+public class DSDragonBot implements Bot {
 
     private final int playerIndex;
 
-    public SampleBot(int playerIndex) {
+    public DSDragonBot(int playerIndex) {
         this.playerIndex = playerIndex;
     }
 

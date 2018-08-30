@@ -1,4 +1,4 @@
-package rlbotexample.input;
+package eastvillage.dsdragon.input;
 
 import rlbot.flat.GameTickPacket;
 

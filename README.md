@@ -1,9 +1,5 @@
-# RLBotJavaExample
-An example bot implemented in Java
-
-## Video Guide
-
-https://youtu.be/mPfYqKe_KRs
+# Dropshot Dragon
+A Rocket League offline bot made for Dropshot with the [RLBot framework](rlbot.org).
 
 ## Usage Instructions:
 
@@ -19,8 +15,8 @@ open and it's OK if it says something like "75%".
 1. Double click on run-framework-gui.bat
 1. Click the 'Run' button
 
-- Bot behavior is controlled by `src/main/java/rlbotexample/SampleBot.java`
-- Bot appearance is controlled by `src/main/python/javaExampleAppearance.cfg`
-
-See the [wiki](https://github.com/RLBot/RLBotJavaExample/wiki)
-for tips to improve your programming experience.
+## Help
+- Bot behavior is controlled by `src/main/java/eastvillage/dsdragon/DSDragonBot.java`
+- Bot appearance is controlled by `src/main/python/appearance.cfg`
+- [RLBot java wiki](https://github.com/RLBot/RLBotJavaExample/wiki)
+- [Useful values for Dropshot](https://github.com/RLBot/RLBot/wiki/Dropshot).

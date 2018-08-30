@@ -1,10 +1,10 @@
-package rlbotexample.boost;
+package eastvillage.dsdragon.boost;
 
+import eastvillage.dsdragon.vector.Vector3;
 import rlbot.cppinterop.RLBotDll;
 import rlbot.flat.BoostPadState;
 import rlbot.flat.FieldInfo;
 import rlbot.flat.GameTickPacket;
-import rlbotexample.vector.Vector3;
 
 import java.io.IOException;
 import java.util.ArrayList;

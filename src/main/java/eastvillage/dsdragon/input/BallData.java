@@ -1,8 +1,8 @@
-package rlbotexample.input;
+package eastvillage.dsdragon.input;
 
 
+import eastvillage.dsdragon.vector.Vector3;
 import rlbot.flat.BallInfo;
-import rlbotexample.vector.Vector3;
 
 public class BallData {
     public final Vector3 position;

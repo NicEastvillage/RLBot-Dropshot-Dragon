@@ -1,7 +1,7 @@
-package rlbotexample.input;
+package eastvillage.dsdragon.input;
 
 
-import rlbotexample.vector.Vector3;
+import eastvillage.dsdragon.vector.Vector3;
 
 public class CarData {
     public final Vector3 position;
