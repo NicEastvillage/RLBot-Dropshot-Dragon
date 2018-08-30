@@ -1,8 +1,9 @@
 package eastvillage.dsdragon.math;
 
+/** A vector with three components: x, y, z */
 public class Vector3 {
 
-    public static final Vector3 ZERO = new Vector3();
+    public static final Vector3 ZERO = new Vector3(0, 0, 0);
     public static final Vector3 ONE = new Vector3(1, 1, 1);
     public static final Vector3 UNIT_X = new Vector3(1, 0, 0);
     public static final Vector3 UNIT_Y = new Vector3(0, 1, 0);
@@ -20,10 +21,6 @@ public class Vector3 {
 
     public Vector3(double x, double y) {
         this(x, y, 0);
-    }
-
-    public Vector3() {
-        this(0, 0, 0);
     }
 
     public static Vector3 fromFlatbuffer(rlbot.flat.Vector3 vec) {
@@ -104,6 +101,7 @@ public class Vector3 {
         return new Vector3(x, y, 0);
     }
 
+    /** @return the angle between this vector in 2d and the vector (1, 0). */
     public double angleXY() {
         return Math.atan2(y, x);
     }
@@ -136,9 +134,7 @@ public class Vector3 {
         }
     }
 
-    /**
-     * Returns the size of this vector component parallel with the other vector
-     */
+    /** Returns the size of this vector component parallel with the other vector */
     public double projectOntoSize(Vector3 other) {
         if (other.isZero()) {
             throw new IllegalArgumentException("Cannot project onto a zero vector!");

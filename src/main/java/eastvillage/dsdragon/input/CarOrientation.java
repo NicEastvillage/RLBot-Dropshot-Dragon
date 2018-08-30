@@ -1,42 +1,41 @@
 package eastvillage.dsdragon.input;
 
-
 import eastvillage.dsdragon.math.Vector3;
-import rlbot.flat.PlayerInfo;
+import rlbot.flat.Rotator;
 
 public class CarOrientation {
 
-    public Vector3 noseVector;
-    public Vector3 roofVector;
-    public Vector3 rightVector;
+    public final Vector3 front;
+    public final Vector3 up;
+    public final Vector3 right;
 
-    public CarOrientation(Vector3 noseVector, Vector3 roofVector) {
-
-        this.noseVector = noseVector;
-        this.roofVector = roofVector;
-        this.rightVector = noseVector.cross(roofVector);
+    private CarOrientation(Vector3 front, Vector3 up) {
+        this.front = front;
+        this.up = up;
+        this.right = front.cross(up);
     }
 
-    public static CarOrientation fromFlatbuffer(PlayerInfo playerInfo) {
-        return convert(
-                playerInfo.physics().rotation().pitch(),
-                playerInfo.physics().rotation().yaw(),
-                playerInfo.physics().rotation().roll());
-    }
-
-    /**
-     * All params are in radians.
-     */
     private static CarOrientation convert(double pitch, double yaw, double roll) {
 
-        double noseX = -1 * Math.cos(pitch) * Math.cos(yaw);
-        double noseY = Math.cos(pitch) * Math.sin(yaw);
-        double noseZ = Math.sin(pitch);
+        double cp = Math.cos(pitch);
+        double sp = Math.sin(pitch);
+        double cy = Math.cos(yaw);
+        double sy = Math.sin(yaw);
+        double cr = Math.cos(roll);
+        double sr = Math.sin(roll);
 
-        double roofX = Math.cos(roll) * Math.sin(pitch) * Math.cos(yaw) + Math.sin(roll) * Math.sin(yaw);
-        double roofY = Math.cos(yaw) * Math.sin(roll) - Math.cos(roll) * Math.sin(pitch) * Math.sin(yaw);
-        double roofZ = Math.cos(roll) * Math.cos(pitch);
+        double noseX = cp * cy;
+        double noseY = cp * sy;
+        double noseZ = sp;
+
+        double roofX = - cr * cy * sp - sr * sy;
+        double roofY = - cr * sy * sp + sr * cy;
+        double roofZ = cp * cr;
 
         return new CarOrientation(new Vector3(noseX, noseY, noseZ), new Vector3(roofX, roofY, roofZ));
+    }
+
+    public static CarOrientation fromFlatbuffer(Rotator rotator) {
+        return convert(rotator.pitch(), rotator.yaw(), rotator.roll());
     }
 }
