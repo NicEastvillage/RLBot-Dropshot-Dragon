@@ -1,5 +1,6 @@
 package eastvillage.dsdragon;
 
+import eastvillage.dsdragon.game.Arena;
 import eastvillage.dsdragon.game.DataPacket;
 import rlbot.Bot;
 import rlbot.ControllerState;
@@ -29,6 +30,7 @@ public class DSDragonBot implements Bot {
             return new ControlsOutput();
         }
         DataPacket dataPacket = new DataPacket(packet, playerIndex);
+        Arena.updateTiles(packet);
         return processInput(dataPacket);
     }
 
