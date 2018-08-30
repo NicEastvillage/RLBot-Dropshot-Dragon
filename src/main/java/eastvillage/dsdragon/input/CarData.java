@@ -1,7 +1,7 @@
 package eastvillage.dsdragon.input;
 
 
-import eastvillage.dsdragon.vector.Vector3;
+import eastvillage.dsdragon.math.Vector3;
 
 public class CarData {
     public final Vector3 position;

@@ -1,4 +1,4 @@
-package eastvillage.dsdragon.output;
+package eastvillage.dsdragon;
 
 import rlbot.ControllerState;
 

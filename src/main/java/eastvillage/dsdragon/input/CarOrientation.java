@@ -1,7 +1,7 @@
 package eastvillage.dsdragon.input;
 
 
-import eastvillage.dsdragon.vector.Vector3;
+import eastvillage.dsdragon.math.Vector3;
 import rlbot.flat.PlayerInfo;
 
 public class CarOrientation {
@@ -14,7 +14,7 @@ public class CarOrientation {
 
         this.noseVector = noseVector;
         this.roofVector = roofVector;
-        this.rightVector = noseVector.crossProduct(roofVector);
+        this.rightVector = noseVector.cross(roofVector);
     }
 
     public static CarOrientation fromFlatbuffer(PlayerInfo playerInfo) {
