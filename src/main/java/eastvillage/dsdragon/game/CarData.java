@@ -1,4 +1,4 @@
-package eastvillage.dsdragon.input;
+package eastvillage.dsdragon.game;
 
 
 import eastvillage.dsdragon.math.Vector3;
@@ -6,7 +6,7 @@ import eastvillage.dsdragon.math.Vector3;
 public class CarData {
     public final Vector3 position;
     public final Vector3 velocity;
-    public final CarOrientation orientation;
+    public final Orientation orientation;
     public final double boost;
     public final boolean hasWheelContact;
     public final boolean isSupersonic;
@@ -16,7 +16,7 @@ public class CarData {
     public CarData(rlbot.flat.PlayerInfo playerInfo, float elapsedSeconds) {
         this.position = Vector3.fromFlatbuffer(playerInfo.physics().location());
         this.velocity = Vector3.fromFlatbuffer(playerInfo.physics().velocity());
-        this.orientation = CarOrientation.fromFlatbuffer(playerInfo.physics().rotation());
+        this.orientation = Orientation.fromFlatbuffer(playerInfo.physics().rotation());
         this.boost = playerInfo.boost();
         this.isSupersonic = playerInfo.isSupersonic();
         this.team = playerInfo.team();

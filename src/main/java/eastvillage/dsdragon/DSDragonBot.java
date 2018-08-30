@@ -1,6 +1,6 @@
 package eastvillage.dsdragon;
 
-import eastvillage.dsdragon.input.DataPacket;
+import eastvillage.dsdragon.game.DataPacket;
 import rlbot.Bot;
 import rlbot.ControllerState;
 import rlbot.flat.GameTickPacket;
