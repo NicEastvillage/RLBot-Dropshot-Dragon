@@ -1,5 +1,7 @@
 package eastvillage.dsdragon.math;
 
+import java.util.Objects;
+
 /** A vector with three components: x, y, z */
 public class Vector3 {
 
@@ -43,24 +45,28 @@ public class Vector3 {
         return new Vector3(x, y, z);
     }
 
-    public Vector3 plus(Vector3 other) {
+    public Vector3 add(Vector3 other) {
         return new Vector3(x + other.x, y + other.y, z + other.z);
     }
 
-    public Vector3 minus(Vector3 other) {
+    public Vector3 sub(Vector3 other) {
         return new Vector3(x - other.x, y - other.y, z - other.z);
     }
 
-    public Vector3 scaled(double scale) {
+    public Vector3 scale(double scale) {
         return new Vector3(x * scale, y * scale, z * scale);
     }
 
-    public Vector3 scaledToMagnitude(double magnitude) {
+    public Vector3 scale(Vector3 other) {
+        return new Vector3(x * other.x, y * other.y, z * other.z);
+    }
+
+    public Vector3 scaleToMagnitude(double magnitude) {
         if (isZero()) {
             throw new IllegalStateException("Cannot scale up a vector with length zero!");
         }
         double scaleRequired = magnitude / magnitude();
-        return scaled(scaleRequired);
+        return scale(scaleRequired);
     }
 
     public double distance(Vector3 other) {
@@ -82,15 +88,11 @@ public class Vector3 {
         if (isZero()) {
             throw new IllegalStateException("Cannot normalize a vector with length zero!");
         }
-        return this.scaled(1 / magnitude());
+        return this.scale(1 / magnitude());
     }
 
     public double dot(Vector3 other) {
         return x * other.x + y * other.y + z * other.z;
-    }
-
-    public Vector3 multiplyComponents(Vector3 other) {
-        return new Vector3(x * other.x, y * other.y, z * other.z);
     }
 
     public boolean isZero() {
@@ -101,7 +103,7 @@ public class Vector3 {
         return new Vector3(x, y, 0);
     }
 
-    /** @return the angle between this vector in 2d and the vector (1, 0). */
+    /** Returns the angle between this vector in 2d and the vector (1, 0). */
     public double angleXY() {
         return Math.atan2(y, x);
     }
@@ -121,16 +123,17 @@ public class Vector3 {
     }
 
     public Vector3 lerp(Vector3 other, double t) {
-        return this.scaled(1 - t).plus(other.scaled(t));
+        return this.scale(1 - t).add(other.scale(t));
     }
 
+    /** Returns the component of this that is parallel with the other. */
     public Vector3 projectOnto(Vector3 other) {
         if (other.isZero()) {
             throw new IllegalArgumentException("Cannot project onto a zero vector!");
         } else {
             double thisdot = this.dot(other);
             double otherdot = other.dot(other);
-            return other.scaled(thisdot / otherdot);
+            return other.scale(thisdot / otherdot);
         }
     }
 
@@ -142,5 +145,25 @@ public class Vector3 {
             other = other.normalized();
             return this.dot(other) / other.dot(other);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Vec(" + x + ", " + y + ", " + z + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector3 vector3 = (Vector3) o;
+        return Double.compare(vector3.x, x) == 0 &&
+                Double.compare(vector3.y, y) == 0 &&
+                Double.compare(vector3.z, z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
     }
 }

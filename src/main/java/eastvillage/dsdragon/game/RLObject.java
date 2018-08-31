@@ -23,7 +23,7 @@ public class RLObject extends TinyRLObject {
     /** Returns a vector that describes how the target location is positioned relative to the from location using the
      * given orientation. The returned vector's x os how far in front, y is how far right, and z is how far above. */
     public static Vector3 relativeLocation(Vector3 from, Orientation orientation, Vector3 target) {
-        Vector3 diff = target.minus(from);
+        Vector3 diff = target.sub(from);
         double x = diff.dot(orientation.front);
         double y = diff.dot(orientation.right);
         double z = diff.dot(orientation.up);
