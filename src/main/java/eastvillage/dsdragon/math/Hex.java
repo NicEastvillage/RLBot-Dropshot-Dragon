@@ -3,7 +3,7 @@ package eastvillage.dsdragon.math;
 import java.util.Objects;
 
 /** A Hex coordinate. Works a lot like a vector, but the axis are q, r, and s with the constraint q + r + s = 0.
- * The direction of the axis is defined by the HexDirection class.
+ * See Arena.HexDirection for more about the axis.
  * Read more about axial coordinates here: https://www.redblobgames.com/grids/hexagons/ */
 public class Hex {
 
@@ -17,28 +17,6 @@ public class Hex {
         this.q = q;
         this.r = r;
         this.s = -q - r;
-    }
-
-    /** Construct a Hex from rounding two floating point q and r coordinates. */
-    public static Hex fromRounding(float fq, float fr) {
-        float fs = -fq - fr;
-
-        int rx = Math.round(fq);
-        int ry = Math.round(fr);
-        int rz = Math.round(fs);
-
-        float x_diff = Math.abs(rx - fq);
-        float y_diff = Math.abs(ry - fr);
-        float z_diff = Math.abs(rz - fs);
-
-        // So we reset the component with the largest change back to what the constraint rx + ry + rz = 0 requires
-        if (x_diff > y_diff && x_diff > z_diff) {
-            rx = -ry - rz;
-        } else if (y_diff > z_diff) {
-            ry = -rx - rz;
-        }
-
-        return new Hex(rx, ry);
     }
 
     public Hex add(Hex h) {
@@ -98,5 +76,27 @@ public class Hex {
     @Override
     public int hashCode() {
         return Objects.hash(q, r);
+    }
+
+    /** Construct a Hex from rounding two floating point q and r coordinates. */
+    public static Hex fromRounding(float fq, float fr) {
+        float fs = -fq - fr;
+
+        int rx = Math.round(fq);
+        int ry = Math.round(fr);
+        int rz = Math.round(fs);
+
+        float x_diff = Math.abs(rx - fq);
+        float y_diff = Math.abs(ry - fr);
+        float z_diff = Math.abs(rz - fs);
+
+        // So we reset the component with the largest change back to what the constraint rx + ry + rz = 0 requires
+        if (x_diff > y_diff && x_diff > z_diff) {
+            rx = -ry - rz;
+        } else if (y_diff > z_diff) {
+            ry = -rx - rz;
+        }
+
+        return new Hex(rx, ry);
     }
 }

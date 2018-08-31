@@ -26,11 +26,11 @@ public class Vector3 {
     }
 
     public static Vector3 fromFlatbuffer(rlbot.flat.Vector3 vec) {
-        return new Vector3(vec.x(), vec.y(), vec.z());
+        return new Vector3(-vec.x(), vec.y(), vec.z());
     }
 
     public rlbot.vector.Vector3 toRlbotVector() {
-        return new rlbot.vector.Vector3((float) x, (float) y, (float) z);
+        return new rlbot.vector.Vector3((float) -x, (float) y, (float) z);
     }
 
     public Vector3 withX(double x) {
