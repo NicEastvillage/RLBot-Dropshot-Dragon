@@ -5,9 +5,12 @@ import eastvillage.dsdragon.math.Vector3;
 import rlbot.cppinterop.RLBotDll;
 import rlbot.flat.FieldInfo;
 import rlbot.flat.GameTickPacket;
+import rlbot.flat.GoalInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 public class Arena {
 
@@ -17,23 +20,28 @@ public class Arena {
     public static final double TILE_HEIGHT = Math.sqrt(3) * TILE_SIZE;
 
     private static final ArrayList<Tile> orderedTiles = new ArrayList<>();
-    private static final ArrayList<Tile> blueTiles = new ArrayList<>();
-    private static final ArrayList<Tile> orangeTiles = new ArrayList<>();
+    private static final HashMap<Hex, Tile> blueTileMap = new HashMap<>();
+    private static final HashMap<Hex, Tile> orangeTileMap = new HashMap<>();
 
     private static void loadFieldInfo(FieldInfo fieldInfo) {
         synchronized (orderedTiles) {
 
             orderedTiles.clear();
-            blueTiles.clear();
-            orangeTiles.clear();
+            blueTileMap.clear();
+            orangeTileMap.clear();
 
             for (int i = 0; i < fieldInfo.goalsLength(); i++) {
-                Tile tile = new Tile(fieldInfo.goals(i));
+                Team team = Team.get(fieldInfo.goals(i).teamNum());
+                Vector3 location = Vector3.fromFlatbuffer(fieldInfo.goals(i).location());
+                location = location.sub(new Vector3(0, 128 * team.sign));
+                Hex hex = pointToHex(location);
+                Tile tile = new Tile(hex, fieldInfo.goals(i));
                 orderedTiles.add(tile);
-                if (tile.team == Team.BLUE) {
-                    blueTiles.add(tile);
+
+                if (team == Team.BLUE) {
+                    blueTileMap.put(hex, tile);
                 } else {
-                    orangeTiles.add(tile);
+                    orangeTileMap.put(hex, tile);
                 }
             }
         }
@@ -59,15 +67,28 @@ public class Arena {
         return orderedTiles;
     }
 
-    public static ArrayList<Tile> getTilesOfTeam(Team team) {
-        return team == Team.BLUE ? blueTiles : orangeTiles;
+    public static Collection<Tile> getTilesOfTeam(Team team) {
+        return team == Team.BLUE ? blueTileMap.values() : orangeTileMap.values();
     }
 
-    public static Vector3 hexToPoint(Hex hex) {
+    /** Returns the Tile under the point, or null of none is. */
+    public static Tile pointToTile(Vector3 point) {
+        if (Team.BLUE.isOnHalf(point)) {
+            point = point.sub(new Vector3(0, -128));
+            Hex hex = pointToHex(point);
+            return blueTileMap.get(hex);
+        } else {
+            point = point.sub(new Vector3(0, 128));
+            Hex hex = pointToHex(point);
+            return orangeTileMap.get(hex);
+        }
+    }
+
+    private static Vector3 hexToPoint(Hex hex) {
         return HexDirection.Q_VEC.scale(hex.q).add(HexDirection.R_VEC.scale(hex.r));
     }
 
-    public static Hex pointToHex(Vector3 point) {
+    private static Hex pointToHex(Vector3 point) {
         double q = (2/3d * point.x) / TILE_SIZE;
         double r = (-1/3d * point.x + Math.sqrt(3)/3 * point.y) / TILE_SIZE;
         return Hex.fromRounding((float)q, (float)r);
