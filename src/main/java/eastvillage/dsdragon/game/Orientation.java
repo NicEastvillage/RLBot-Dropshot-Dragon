@@ -24,12 +24,12 @@ public class Orientation {
         double cr = Math.cos(roll);
         double sr = Math.sin(roll);
 
-        double noseX = cp * cy;
+        double noseX = - cp * cy;
         double noseY = cp * sy;
         double noseZ = sp;
 
-        double roofX = - cr * cy * sp - sr * sy;
-        double roofY = - cr * sy * sp + sr * cy;
+        double roofX = cr * cy * sp + sr * sy;
+        double roofY = cr * sy * sp - sr * cy;
         double roofZ = cp * cr;
 
         return new Orientation(new Vector3(noseX, noseY, noseZ), new Vector3(roofX, roofY, roofZ));
