@@ -1,5 +1,6 @@
 package eastvillage.dsdragon;
 
+import eastvillage.dsdragon.controllers.GeneralMoving;
 import eastvillage.dsdragon.game.Arena;
 import eastvillage.dsdragon.game.DataPacket;
 import eastvillage.dsdragon.game.Team;
@@ -49,7 +50,7 @@ public class DSDragonBot implements Bot {
 
         ControlsOutput controls = new ControlsOutput();
         Vector3 ballRelative = input.car.relativeLocation(input.ball.location);
-        controls.withSteer((float) RLMath.clamp(ballRelative.angleXY(), -1, 1));
+        controls.withSteer(GeneralMoving.smoothSteer(ballRelative.angleXY()));
         return controls.withThrottle(1f);
     }
 
@@ -73,6 +74,6 @@ public class DSDragonBot implements Bot {
     }
 
     public void retire() {
-        System.out.println("Retiring sample bot " + playerIndex);
+        System.out.println("Retiring Dragon " + playerIndex);
     }
 }

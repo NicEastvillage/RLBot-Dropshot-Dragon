@@ -57,9 +57,13 @@ public class Arena {
             }
         }
 
-        for (int i = 0; i < packet.tileInformationLength(); i++) {
-            int intState = packet.tileInformation(i).tileState();
-            orderedTiles.get(i).state = Tile.State.values()[intState];
+        try {
+            for (int i = 0; i < packet.tileInformationLength(); i++) {
+                int intState = packet.tileInformation(i).tileState();
+                orderedTiles.get(i).state = Tile.State.values()[intState];
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // field info needs reload
         }
     }
 
