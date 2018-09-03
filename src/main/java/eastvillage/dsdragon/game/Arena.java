@@ -5,7 +5,6 @@ import eastvillage.dsdragon.math.Vector3;
 import rlbot.cppinterop.RLBotDll;
 import rlbot.flat.FieldInfo;
 import rlbot.flat.GameTickPacket;
-import rlbot.flat.GoalInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +13,10 @@ import java.util.HashMap;
 
 public class Arena {
 
-    public static final double SIZE = 2000; // Not found yet
+    public static final double HEIGHT = 1986;
+    public static final double TO_WALL = 4555;
+    public static final double TO_CORNER = 2 * TO_WALL / Math.sqrt(3);
+    public static final double TO_ROUND_CORNER = 5026;
     public static final double TILE_WIDTH = 768;
     public static final double TILE_SIZE = TILE_WIDTH / Math.sqrt(3);
     public static final double TILE_HEIGHT = TILE_SIZE * 2;
@@ -30,7 +32,8 @@ public class Arena {
             blueTileMap.clear();
             orangeTileMap.clear();
 
-            for (int i = 0; i < fieldInfo.goalsLength(); i++) {
+            int goalCount = fieldInfo.goalsLength();
+            for (int i = 0; i < goalCount; i++) {
                 Team team = Team.get(fieldInfo.goals(i).teamNum());
                 Vector3 location = Vector3.fromFlatbuffer(fieldInfo.goals(i).location());
                 location = location.sub(new Vector3(0, 128 * team.sign));
@@ -58,7 +61,8 @@ public class Arena {
         }
 
         try {
-            for (int i = 0; i < packet.tileInformationLength(); i++) {
+            int tileCount = packet.tileInformationLength();
+            for (int i = 0; i < tileCount; i++) {
                 int intState = packet.tileInformation(i).tileState();
                 orderedTiles.get(i).state = Tile.State.values()[intState];
             }
@@ -73,6 +77,15 @@ public class Arena {
 
     public static Collection<Tile> getTilesOfTeam(Team team) {
         return team == Team.BLUE ? blueTileMap.values() : orangeTileMap.values();
+    }
+
+    /** Returns true if point is within the arena. */
+    public static boolean contains(Vector3 point) {
+        if (point.z < 0 || HEIGHT < point.z) return false;
+        double absx = Math.abs(point.x);
+        double absy = Math.abs(point.y);
+        if (TO_CORNER < absx || TO_WALL < absy) return false;
+        return -TO_WALL * absx + TO_WALL * TO_CORNER - 0.5 * TO_CORNER * absy >= 0;
     }
 
     /** Returns the Tile under the point, or null of none is. */
@@ -94,6 +107,7 @@ public class Arena {
         return HexDirection.Q_VEC.scale(hex.q).add(HexDirection.R_VEC.scale(hex.r));
     }
 
+    /** Note: Not the same as pointToTile. This assumes the Hex(0, 0) is at point (0, 0). */
     private static Hex pointToHex(Vector3 point) {
         double q = point.x / TILE_WIDTH - point.y * 2 / (3 * TILE_HEIGHT);
         double r = point.y * 4 / (3 * TILE_HEIGHT);

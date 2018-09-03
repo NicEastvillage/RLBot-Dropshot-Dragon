@@ -27,23 +27,14 @@ public class DSDragonBot implements Bot {
     }
 
     private ControlsOutput processInput(DataPacket input) {
-        if (Arena.getOrderedTiles().size() != 0) {
-            // self tile
-            Color color = input.car.team == Team.BLUE ? Color.RED : Color.CYAN;
-            Tile tile = Arena.pointToTile(input.car.location);
-            renderer.drawLine3d(color, input.car.location.toRlbotVector(), input.car.location.withZ(0).toRlbotVector());
-            if (tile != null) {
-                renderer.drawCenteredRectangle3d(color, tile.location.toRlbotVector(), 10, 10, true);
-                renderer.drawLine3d(color, input.car.location.withZ(0).toRlbotVector(), tile.location.toRlbotVector());
-            }
-
-            // ball tile
-            if (playerIndex == 0) {
-                tile = Arena.pointToTile(input.ball.location);
-                renderer.drawLine3d(Color.YELLOW, input.ball.location.toRlbotVector(), input.ball.location.withZ(0).toRlbotVector());
-                if (tile != null) {
-                    renderer.drawCenteredRectangle3d(Color.YELLOW, tile.location.toRlbotVector(), 10, 10, true);
-                    renderer.drawLine3d(Color.YELLOW, input.ball.location.withZ(0).toRlbotVector(), tile.location.toRlbotVector());
+        // Are points within?
+        if (playerIndex == 0) {
+            for (float x = 0; x <= 5200; x += 400) {
+                for (float y = 0; y <= 5200; y += 400) {
+                    Vector3 vec = new Vector3(x, y, 0);
+                    if (vec.magnitude() < 4300) continue;
+                    Color color = Arena.contains(vec) ? Color.GREEN : Color.RED;
+                    renderer.drawCenteredRectangle3d(color, vec.toRlbotVector(), 6, 6, true);
                 }
             }
         }
