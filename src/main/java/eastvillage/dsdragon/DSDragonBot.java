@@ -3,13 +3,9 @@ package eastvillage.dsdragon;
 import eastvillage.dsdragon.controllers.GeneralMoving;
 import eastvillage.dsdragon.game.Arena;
 import eastvillage.dsdragon.game.DataPacket;
-import eastvillage.dsdragon.game.Team;
-import eastvillage.dsdragon.game.Tile;
-import eastvillage.dsdragon.math.RLMath;
 import eastvillage.dsdragon.math.Vector3;
 import rlbot.Bot;
 import rlbot.ControllerState;
-import rlbot.cppinterop.RLBotDll;
 import rlbot.flat.GameTickPacket;
 import rlbot.manager.BotLoopRenderer;
 import rlbot.render.Renderer;
@@ -40,7 +36,7 @@ public class DSDragonBot implements Bot {
         }
 
         ControlsOutput controls = new ControlsOutput();
-        Vector3 ballRelative = input.car.relativeLocation(input.ball.location);
+        Vector3 ballRelative = input.self.relativeLocation(input.ball.location);
         controls.withSteer(GeneralMoving.smoothSteer(ballRelative.angleXY()));
         return controls.withThrottle(1f);
     }
@@ -55,7 +51,7 @@ public class DSDragonBot implements Bot {
         if (packet.playersLength() <= playerIndex || packet.ball() == null) {
             return new ControlsOutput();
         }
-        DataPacket dataPacket = new DataPacket(packet, playerIndex);
+        DataPacket dataPacket = new DataPacket(packet, playerIndex, renderer);
         Arena.updateTiles(packet);
         if (Arena.getOrderedTiles().size() != 140) {
             return new ControlsOutput();
