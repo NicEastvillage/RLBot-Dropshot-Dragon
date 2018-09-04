@@ -62,9 +62,10 @@ public class Arena {
 
         try {
             int tileCount = packet.tileInformationLength();
+            Tile.State[] states = Tile.State.values();
             for (int i = 0; i < tileCount; i++) {
                 int intState = packet.tileInformation(i).tileState();
-                orderedTiles.get(i).state = Tile.State.values()[intState];
+                orderedTiles.get(i).state = states[intState];
             }
         } catch (IndexOutOfBoundsException e) {
             // field info needs reload
