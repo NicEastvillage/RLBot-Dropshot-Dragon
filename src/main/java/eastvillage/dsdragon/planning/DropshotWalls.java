@@ -54,7 +54,7 @@ public class DropshotWalls {
 
         @Override
         public UncertainEvent nextBallHit(RLObject ball) {
-            return PhysicsPredictions.timeOfArrivalAtHeight(ball, Arena.HEIGHT - Ball.RADIUS, true);
+            return PhysicsPredictions.arrivalAtHeight(ball, Arena.HEIGHT - Ball.RADIUS, true);
         }
 
         @Override

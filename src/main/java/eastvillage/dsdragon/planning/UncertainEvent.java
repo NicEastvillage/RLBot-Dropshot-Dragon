@@ -32,4 +32,10 @@ public class UncertainEvent {
     public boolean happensBefore(UncertainEvent other) {
         return (happens && !other.happens) || (other.happens && this.happensBefore(other.time));
     }
+
+    /** Returns true if this event happens after arg time.
+     * Returns false if this event does not happen. */
+    public boolean happensAfter(double time) {
+        return happens && this.time > time;
+    }
 }
