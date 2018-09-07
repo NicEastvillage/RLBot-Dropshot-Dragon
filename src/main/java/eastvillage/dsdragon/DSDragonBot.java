@@ -36,7 +36,7 @@ public class DSDragonBot implements Bot {
         }
 
         ControlsOutput controls = new ControlsOutput();
-        Vector3 ballRelative = input.self.relativeLocation(input.ball.location);
+        Vector3 ballRelative = input.self.relativeLocation(input.ball.getLocation());
         controls.withSteer(GeneralMoving.smoothSteer(ballRelative.angleXY()));
         return controls.withThrottle(1f);
     }

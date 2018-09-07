@@ -13,9 +13,9 @@ public class DropshotWalls {
 
         @Override
         public UncertainEvent nextBallHit(RLObject ball) {
-            if (ball.velocity.y == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
-            double dist = Arena.TO_WALL - ball.location.y - Ball.RADIUS;
-            double time = dist / ball.velocity.y;
+            if (ball.getVelocity().y == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
+            double dist = Arena.TO_WALL - ball.getLocation().y - Ball.RADIUS;
+            double time = dist / ball.getVelocity().y;
             return new UncertainEvent(time >= 0, time);
         }
 
@@ -31,9 +31,9 @@ public class DropshotWalls {
 
         @Override
         public UncertainEvent nextBallHit(RLObject ball) {
-            if (ball.velocity.y == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
-            double dist = -Arena.TO_WALL + ball.location.y - Ball.RADIUS;
-            double time = -dist / ball.velocity.y;
+            if (ball.getVelocity().y == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
+            double dist = -Arena.TO_WALL + ball.getLocation().y - Ball.RADIUS;
+            double time = -dist / ball.getVelocity().y;
             return new UncertainEvent(time >= 0, time);
         }
 
@@ -84,9 +84,9 @@ public class DropshotWalls {
 
         @Override
         public UncertainEvent nextBallHit(RLObject ball) {
-            double dotvel = ball.velocity.dot(normal);
+            double dotvel = ball.getVelocity().dot(normal);
             if (dotvel == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
-            Vector3 dist = normal.scale(ball.location.sub(anchor));
+            Vector3 dist = normal.scale(ball.getLocation().sub(anchor));
             double time = (dist.x + dist.y) / -dotvel;
             return new UncertainEvent(time >= 0, time);
         }
