@@ -31,13 +31,13 @@ public class PhysicsPredictions {
         // If already at height, return 0
         if (height == object.getLocation().z) return new UncertainEvent(true, 0);
         if (!affectedByGravity) {
-            return timeOfArrivalAtHeightLinear(object, height);
+            return arrivalAtHeightLinear(object, height);
         } else {
-            return timeOfArrivalAtHeightQuadratic(object, height, GRAVITY.z);
+            return arrivalAtHeightQuadratic(object, height, GRAVITY.z);
         }
     }
 
-    private static UncertainEvent timeOfArrivalAtHeightQuadratic(TinyRLObject object, double height, double acc) {
+    private static UncertainEvent arrivalAtHeightQuadratic(TinyRLObject object, double height, double acc) {
         double loc = object.getLocation().z;
         double vel = object.getVelocity().z;
 
@@ -64,7 +64,7 @@ public class PhysicsPredictions {
         return new UncertainEvent(true, time);
     }
 
-    private static UncertainEvent timeOfArrivalAtHeightLinear(TinyRLObject object, double height) {
+    private static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
         if (object.getVelocity().z == 0 && object.getLocation().z != height)
             return new UncertainEvent(false, UncertainEvent.NEVER);
 
