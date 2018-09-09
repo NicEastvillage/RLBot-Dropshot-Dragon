@@ -10,10 +10,18 @@ public class PhysicsPredictions {
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
 
 
-    /** Move the object to the position it will be in some time. This methods mutates the object. */
+    /** Move the object to the position it will be in some time. The object will be affected by gravity.
+     * This method mutates the object. */
     public static <T extends TinyRLObject> T moveFallingObject(T object, double time) {
         object.setLocation(GRAVITY.scale(0.5 * time * time).add(object.getVelocity().scale(time)).add(object.getLocation()));
         object.setVelocity(GRAVITY.scale(time).add(object.getVelocity()));
+        return object;
+    }
+
+    /** Move the object to the position it will be in some time with it. The object will NOT be affected by gravity
+     * nor change it's velocity. However, this method mutates the object's location. */
+    public static <T extends TinyRLObject> T moveObjectStraight(T object, double time) {
+        object.setLocation(object.getVelocity().scale(time).add(object.getLocation()));
         return object;
     }
 
@@ -148,12 +156,12 @@ public class PhysicsPredictions {
                 }
                 if (timeLeft < wallHit.getTime()) {
                     // Out of time happens first
-                    return moveFallingObject(ball, time);
+                    return moveObjectStraight(ball, time);
                 }
 
                 // Just roll
                 timeSpent += wallHit.getTime();
-                moveFallingObject(ball, wallHit.getTime());
+                moveObjectStraight(ball, wallHit.getTime());
                 bounceBall(ball, wallHit.getNormal());
             }
             else {

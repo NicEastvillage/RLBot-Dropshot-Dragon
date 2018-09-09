@@ -2,8 +2,11 @@ package eastvillage.dsdragon;
 
 import eastvillage.dsdragon.controllers.GeneralMoving;
 import eastvillage.dsdragon.game.Arena;
+import eastvillage.dsdragon.game.Ball;
 import eastvillage.dsdragon.game.DataPacket;
+import eastvillage.dsdragon.game.RLObject;
 import eastvillage.dsdragon.math.Vector3;
+import eastvillage.dsdragon.planning.PhysicsPredictions;
 import rlbot.Bot;
 import rlbot.ControllerState;
 import rlbot.flat.GameTickPacket;
@@ -23,16 +26,17 @@ public class DSDragonBot implements Bot {
     }
 
     private ControlsOutput processInput(DataPacket input) {
-        // Are points within?
-        if (playerIndex == 0) {
-            for (float x = 0; x <= 5200; x += 400) {
-                for (float y = 0; y <= 5200; y += 400) {
-                    Vector3 vec = new Vector3(x, y, 0);
-                    if (vec.magnitude() < 4300) continue;
-                    Color color = Arena.contains(vec) ? Color.GREEN : Color.RED;
-                    renderer.drawCenteredRectangle3d(color, vec.toRlbotVector(), 6, 6, true);
-                }
+        // My own ball prediction
+        RLObject ball = input.ball.clone();
+        rlbot.vector.Vector3 last = null;
+        for (int i = 0; i < 40; i++) {
+            PhysicsPredictions.moveBall(ball, 0.1f);
+            rlbot.vector.Vector3 loc = ball.getLocation().toRlbotVector();
+            if (last != null) {
+                System.out.println(last);
+                // renderer.drawLine3d(Color.red, last, loc);
             }
+            last = loc;
         }
 
         ControlsOutput controls = new ControlsOutput();
@@ -52,8 +56,8 @@ public class DSDragonBot implements Bot {
             return new ControlsOutput();
         }
         DataPacket dataPacket = new DataPacket(packet, playerIndex, renderer);
-        Arena.updateTiles(packet);
-        if (Arena.getOrderedTiles().size() != 140) {
+        // Arena.updateTiles(packet); // TODO Remove comment and false in following if-statement
+        if (false && Arena.getOrderedTiles().size() != 140) {
             return new ControlsOutput();
         } else {
             return processInput(dataPacket);
