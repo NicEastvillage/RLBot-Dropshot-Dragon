@@ -34,8 +34,8 @@ public class UncertainEvent {
     }
 
     /** Returns true if this event happens after arg time.
-     * Returns false if this event does not happen. */
+     * Returns true if this event does not happen. */
     public boolean happensAfter(double time) {
-        return happens && this.time > time;
+        return !happens || this.time > time;
     }
 }

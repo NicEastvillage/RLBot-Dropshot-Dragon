@@ -10,7 +10,7 @@ public class TinyRLObject implements Cloneable {
 
     public TinyRLObject(Physics physics) {
         location = Vector3.fromFlatbuffer(physics.location());
-        velocity = Vector3.fromFlatbuffer(physics.location());
+        velocity = Vector3.fromFlatbuffer(physics.velocity());
     }
 
     public TinyRLObject(Vector3 location, Vector3 velocity) {

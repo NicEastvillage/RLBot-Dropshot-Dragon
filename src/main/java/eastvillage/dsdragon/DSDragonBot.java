@@ -1,10 +1,7 @@
 package eastvillage.dsdragon;
 
 import eastvillage.dsdragon.controllers.GeneralMoving;
-import eastvillage.dsdragon.game.Arena;
-import eastvillage.dsdragon.game.Ball;
-import eastvillage.dsdragon.game.DataPacket;
-import eastvillage.dsdragon.game.RLObject;
+import eastvillage.dsdragon.game.*;
 import eastvillage.dsdragon.math.Vector3;
 import eastvillage.dsdragon.planning.PhysicsPredictions;
 import rlbot.Bot;
@@ -27,16 +24,18 @@ public class DSDragonBot implements Bot {
 
     private ControlsOutput processInput(DataPacket input) {
         // My own ball prediction
-        RLObject ball = input.ball.clone();
-        rlbot.vector.Vector3 last = null;
-        for (int i = 0; i < 40; i++) {
-            PhysicsPredictions.moveBall(ball, 0.1f);
-            rlbot.vector.Vector3 loc = ball.getLocation().toRlbotVector();
-            if (last != null) {
-                System.out.println(last);
-                // renderer.drawLine3d(Color.red, last, loc);
+        if (input.playerIndex == 0) {
+            RLObject ball = input.ball.clone();
+            System.out.println(ball.getLocation());
+            rlbot.vector.Vector3 last = null;
+            for (int i = 0; i < 40; i++) {
+                PhysicsPredictions.moveBall(ball, 0.1f);
+                rlbot.vector.Vector3 loc = ball.getLocation().toRlbotVector();
+                if (last != null) {
+                    renderer.drawLine3d(Color.red, last, loc);
+                }
+                last = loc;
             }
-            last = loc;
         }
 
         ControlsOutput controls = new ControlsOutput();

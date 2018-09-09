@@ -36,8 +36,6 @@ public class PhysicsPredictions {
     }
 
     public static UncertainEvent arrivalAtHeight(TinyRLObject object, double height, boolean affectedByGravity) {
-        // If already at height, return 0
-        if (height == object.getLocation().z) return new UncertainEvent(true, 0);
         if (!affectedByGravity) {
             return arrivalAtHeightLinear(object, height);
         } else {
@@ -50,7 +48,7 @@ public class PhysicsPredictions {
         double vel = object.getVelocity().z;
 
         // Check if height is above current z, because then the body may never get there
-        if (height > loc) {
+        if (height >= loc) {
             // Elapsed time when arriving at the turning point
             double turnTime = -vel / acc;
             double turnPointHeight = 0.5 * acc * turnTime * turnTime + vel * turnTime + loc;
@@ -73,6 +71,7 @@ public class PhysicsPredictions {
     }
 
     private static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
+        if (height == object.getLocation().z) return new UncertainEvent(true, 0);
         if (object.getVelocity().z == 0 && object.getLocation().z != height)
             return new UncertainEvent(false, UncertainEvent.NEVER);
 
@@ -128,9 +127,11 @@ public class PhysicsPredictions {
     public static RLObject moveBall(RLObject ball, double time) {
         if (time <= 0) return ball;
 
+        int limit = 30;
         double timeSpent = 0;
 
-        while (time - timeSpent > 0.001d) {
+        while (time - timeSpent > 0.001d && limit >= 0) {
+            limit--;
             double timeLeft = time - timeSpent;
 
             WallHitEvent wallHit = arrivalAtAnyWall(ball);
@@ -146,7 +147,7 @@ public class PhysicsPredictions {
                 moveFallingObject(ball, wallHit.getTime());
                 bounceBall(ball, wallHit.getNormal());
             }
-            else if (groundHit.getTime() == 0 && Math.abs(ball.getVelocity().z) < 3d) {
+            else if (groundHit.getTime() == 0 && Math.abs(ball.getVelocity().z) < 1.0) {
                 // Ball is rolling. Move it until it hits wall or out of time
                 ball.setVelocity(ball.getVelocity().withZ(0));
 
