@@ -26,17 +26,19 @@ public class DSDragonBot implements Bot {
         // My own ball prediction
         if (input.playerIndex == 0) {
             RLObject ball = input.ball.clone();
-            System.out.println(ball.getLocation());
             rlbot.vector.Vector3 last = null;
             for (int i = 0; i < 40; i++) {
                 PhysicsPredictions.moveBall(ball, 0.1f);
                 rlbot.vector.Vector3 loc = ball.getLocation().toRlbotVector();
                 if (last != null) {
-                    renderer.drawLine3d(Color.red, last, loc);
+                    renderer.drawLine3d(Color.green, last, loc);
                 }
                 last = loc;
             }
         }
+
+        if (Arena.getOrderedTiles().size() > 0)
+            System.out.println(input.ball.getLocation().z);
 
         ControlsOutput controls = new ControlsOutput();
         Vector3 ballRelative = input.self.relativeLocation(input.ball.getLocation());
@@ -55,7 +57,7 @@ public class DSDragonBot implements Bot {
             return new ControlsOutput();
         }
         DataPacket dataPacket = new DataPacket(packet, playerIndex, renderer);
-        // Arena.updateTiles(packet); // TODO Remove comment and false in following if-statement
+        Arena.updateTiles(packet); // TODO Remove comment and false in following if-statement
         if (false && Arena.getOrderedTiles().size() != 140) {
             return new ControlsOutput();
         } else {

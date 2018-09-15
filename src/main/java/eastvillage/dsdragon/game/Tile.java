@@ -14,7 +14,7 @@ public class Tile {
 
     public Tile(Hex hex, GoalInfo info) {
         this.hex = hex;
-        this.location = Vector3.fromFlatbuffer(info.location());
+        this.location = Vector3.fromFlatbuffer(info.location()).withZ(Arena.TILE_ELEVATION);
         this.team = Team.get(info.teamNum());
         this.state = State.UNKNOWN;
     }

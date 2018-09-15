@@ -20,6 +20,7 @@ public class Arena {
     public static final double TILE_WIDTH = 768;
     public static final double TILE_SIZE = TILE_WIDTH / Math.sqrt(3);
     public static final double TILE_HEIGHT = TILE_SIZE * 2;
+    public static final double TILE_ELEVATION = 3.0;
 
     private static final ArrayList<Tile> orderedTiles = new ArrayList<>();
     private static final HashMap<Hex, Tile> blueTileMap = new HashMap<>();

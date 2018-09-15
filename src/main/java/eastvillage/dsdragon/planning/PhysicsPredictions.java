@@ -1,5 +1,6 @@
 package eastvillage.dsdragon.planning;
 
+import eastvillage.dsdragon.game.Arena;
 import eastvillage.dsdragon.game.Ball;
 import eastvillage.dsdragon.game.RLObject;
 import eastvillage.dsdragon.game.TinyRLObject;
@@ -47,6 +48,18 @@ public class PhysicsPredictions {
         double loc = object.getLocation().z;
         double vel = object.getVelocity().z;
 
+        double disc = vel * vel - 4 * acc * loc;
+
+        if (disc < 0) {
+            return new UncertainEvent(false, UncertainEvent.NEVER);
+        } else {
+            double t1 = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc; // positive
+            double t2 = (-vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc; // possibly negative
+            double time = t2 < 0.05? t1 : t2;
+            return new UncertainEvent(true, time);
+        }
+
+        /*
         // Check if height is above current z, because then the body may never get there
         if (height >= loc) {
             // Elapsed time when arriving at the turning point
@@ -67,7 +80,7 @@ public class PhysicsPredictions {
 
         // t = -(v + sqrt(2*a*h - 2*a*p + v^2)) / a
         double time = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc;
-        return new UncertainEvent(true, time);
+        return new UncertainEvent(true, time);*/
     }
 
     private static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
@@ -100,8 +113,9 @@ public class PhysicsPredictions {
      * This method mutates the ball. */
     public static <T extends RLObject> T bounceBall(T ball, Vector3 normal) {
         // See https://samuelpmish.github.io/notes/RocketLeague/ball_bouncing/
-        final double MU = 0.285;
-        final double A = 0.0003;
+        final double MU = 0.285; // was 0.285 in chip's code
+        final double A = 0.0003; // was 0.0003 in chip's code
+        final double Y = 2.0; // was 2.0 in chip's code
 
         Vector3 v_perp = normal.scale(ball.getVelocity().dot(normal));
         Vector3 v_para = ball.getVelocity().sub(v_perp);
@@ -111,7 +125,7 @@ public class PhysicsPredictions {
         Vector3 delta_v_para = Vector3.ZERO;
         if (s.magnitude() != 0) {
             double ratio = v_perp.magnitude() / s.magnitude();
-            delta_v_para = s.scale(-MU * Math.min(1d, 2d * ratio));
+            delta_v_para = s.scale(-MU * Math.min(1d, Y * ratio));
         }
 
         Vector3 delta_v_perp = v_perp.scale(-1.6);
@@ -135,7 +149,7 @@ public class PhysicsPredictions {
             double timeLeft = time - timeSpent;
 
             WallHitEvent wallHit = arrivalAtAnyWall(ball);
-            UncertainEvent groundHit = arrivalAtHeight(ball, Ball.RADIUS, true);
+            UncertainEvent groundHit = arrivalAtHeight(ball, Ball.RADIUS + Arena.TILE_ELEVATION, true);
 
             // Check if ball hit anything
             if (groundHit.happensAfter(timeLeft) && wallHit.happensAfter(timeLeft)) {
@@ -147,7 +161,7 @@ public class PhysicsPredictions {
                 moveFallingObject(ball, wallHit.getTime());
                 bounceBall(ball, wallHit.getNormal());
             }
-            else if (groundHit.getTime() == 0 && Math.abs(ball.getVelocity().z) < 1.0) {
+            else if (groundHit.getTime() < 0.02 && Math.abs(ball.getVelocity().z) < 5.0) {
                 // Ball is rolling. Move it until it hits wall or out of time
                 ball.setVelocity(ball.getVelocity().withZ(0));
 
@@ -166,10 +180,11 @@ public class PhysicsPredictions {
                 bounceBall(ball, wallHit.getNormal());
             }
             else {
-                // Move ball to ground hit
-                timeSpent += groundHit.getTime();
+                // Move ball to ground hit (or to time out if ball is below floor level)
+                timeSpent += Math.min(groundHit.getTime(), timeLeft);
                 moveFallingObject(ball, groundHit.getTime());
                 bounceBall(ball, Vector3.UNIT_Z);
+                System.out.println("! " + Math.min(groundHit.getTime(), timeLeft) + " ! " + ball.getVelocity().z);
             }
         }
 
