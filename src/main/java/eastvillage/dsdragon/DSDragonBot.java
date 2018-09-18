@@ -54,12 +54,8 @@ public class DSDragonBot implements Bot {
             return new ControlsOutput();
         }
         DataPacket dataPacket = new DataPacket(packet, playerIndex, renderer);
-        Arena.updateTiles(packet); // TODO Remove comment and false in following if-statement
-        if (false && Arena.getOrderedTiles().size() != 140) {
-            return new ControlsOutput();
-        } else {
-            return processInput(dataPacket);
-        }
+        Arena.updateTiles(packet);
+        return processInput(dataPacket);
     }
 
     public void retire() {

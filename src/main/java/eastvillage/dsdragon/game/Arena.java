@@ -34,6 +34,7 @@ public class Arena {
             orangeTileMap.clear();
 
             int goalCount = fieldInfo.goalsLength();
+            if (goalCount != 140) System.out.println("Goal count: " + goalCount);
             for (int i = 0; i < goalCount; i++) {
                 Team team = Team.get(fieldInfo.goals(i).teamNum());
                 Vector3 location = Vector3.fromFlatbuffer(fieldInfo.goals(i).location());
