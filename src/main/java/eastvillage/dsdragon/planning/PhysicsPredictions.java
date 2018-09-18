@@ -48,6 +48,8 @@ public class PhysicsPredictions {
         double loc = object.getLocation().z;
         double vel = object.getVelocity().z;
 
+        if (Math.abs(height - loc) < 3) return new UncertainEvent(true, 0);
+
         double disc = vel * vel - 4 * acc * loc;
 
         if (disc < 0) {
@@ -162,7 +164,7 @@ public class PhysicsPredictions {
                 moveFallingObject(ball, wallHit.getTime());
                 bounceBall(ball, wallHit.getNormal());
             }
-            else if (groundHit.getTime() < 0.02 && Math.abs(ball.getVelocity().z) < 5.0) {
+            else if (groundHit.getTime() < 0.1 && Math.abs(ball.getVelocity().z) < 10.0) {
                 // Ball is rolling. Move it until it hits wall or out of time
                 ball.setVelocity(ball.getVelocity().withZ(0));
 
@@ -188,7 +190,6 @@ public class PhysicsPredictions {
                     timeSpent += timeLeft;
                 moveFallingObject(ball, groundHit.getTime());
                 bounceBall(ball, Vector3.UNIT_Z);
-                System.out.println("! " + Math.min(groundHit.getTime(), timeLeft) + " ! " + ball.getVelocity().z);
             }
         }
 

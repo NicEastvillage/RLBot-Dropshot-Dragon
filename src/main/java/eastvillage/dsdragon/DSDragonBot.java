@@ -37,9 +37,6 @@ public class DSDragonBot implements Bot {
             }
         }
 
-        if (Arena.getOrderedTiles().size() > 0)
-            System.out.println(input.ball.getLocation().z);
-
         ControlsOutput controls = new ControlsOutput();
         Vector3 ballRelative = input.self.relativeLocation(input.ball.getLocation());
         controls.withSteer(GeneralMoving.smoothSteer(ballRelative.angleXY()));
