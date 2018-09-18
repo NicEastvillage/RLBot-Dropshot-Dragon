@@ -56,6 +56,7 @@ public class PhysicsPredictions {
             double t1 = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc; // positive
             double t2 = (-vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc; // possibly negative
             double time = t2 < 0.05? t1 : t2;
+            if (Double.isNaN(time)) time = 0;
             return new UncertainEvent(true, time);
         }
 
@@ -181,7 +182,10 @@ public class PhysicsPredictions {
             }
             else {
                 // Move ball to ground hit (or to time out if ball is below floor level)
-                timeSpent += Math.min(groundHit.getTime(), timeLeft);
+                if (!Double.isNaN(groundHit.getTime()))
+                    timeSpent += Math.min(groundHit.getTime(), timeLeft);
+                else
+                    timeSpent += timeLeft;
                 moveFallingObject(ball, groundHit.getTime());
                 bounceBall(ball, Vector3.UNIT_Z);
                 System.out.println("! " + Math.min(groundHit.getTime(), timeLeft) + " ! " + ball.getVelocity().z);
