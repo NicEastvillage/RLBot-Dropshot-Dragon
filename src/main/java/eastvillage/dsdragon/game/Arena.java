@@ -62,7 +62,7 @@ public class Arena {
         }
 
         try {
-            int tileCount = packet.tileInformationLength();
+            int tileCount = orderedTiles.size();
             Tile.State[] states = Tile.State.values();
             for (int i = 0; i < tileCount; i++) {
                 int intState = packet.tileInformation(i).tileState();
@@ -70,6 +70,8 @@ public class Arena {
             }
         } catch (IndexOutOfBoundsException e) {
             // field info needs reload
+        } catch (NullPointerException e) {
+            System.out.println("NULL POINTER EXCEPTION IN ARENA.UPDATE()");
         }
     }
 
