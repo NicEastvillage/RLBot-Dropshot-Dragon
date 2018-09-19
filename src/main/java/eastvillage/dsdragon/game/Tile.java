@@ -19,6 +19,13 @@ public class Tile {
         this.state = State.UNKNOWN;
     }
 
+    public Tile(Vector3 location, Hex hex, Team team) {
+        this.location = location;
+        this.team = team;
+        this.hex = hex;
+        this.state = State.UNKNOWN;
+    }
+
     public enum State {
         UNKNOWN, FILLED, DAMAGED, OPEN
     }
