@@ -6,8 +6,11 @@ import eastvillage.dsdragon.game.RLObject;
 import eastvillage.dsdragon.game.TinyRLObject;
 import eastvillage.dsdragon.math.Vector3;
 
+import javax.swing.*;
+
 public class PhysicsPredictions {
 
+    public enum QuadDirection { ANY, DOWN, UP }
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
 
 
@@ -40,19 +43,19 @@ public class PhysicsPredictions {
         if (!affectedByGravity) {
             return arrivalAtHeightLinear(object, height);
         } else {
-            return arrivalAtHeightQuadratic(object, height, GRAVITY.z);
+            return arrivalAtHeightQuadratic(object, height, GRAVITY.z, QuadDirection.ANY);
         }
     }
 
-    private static UncertainEvent arrivalAtHeightQuadratic(TinyRLObject object, double height, double acc) {
+    public static UncertainEvent arrivalAtHeightQuadratic(TinyRLObject object, double height, double acc, QuadDirection direction) {
         double loc = object.getLocation().z;
         double vel = object.getVelocity().z;
 
         boolean insignificantDistance = Math.abs(height - loc) < 4;
-        if (insignificantDistance && Math.abs(vel) < 10) return new UncertainEvent(true, 0);
+        if (insignificantDistance && Math.abs(vel) < 8) return new UncertainEvent(true, 0);
 
         // Check if height is above current z, because then the body may never get there
-        if (height > loc && !insignificantDistance) {
+        if (height > loc && !insignificantDistance && direction != QuadDirection.DOWN) {
             // Elapsed time when arriving at the turning point
             double turnTime = -vel / acc;
             double turnPointHeight = 0.5 * acc * turnTime * turnTime + vel * turnTime + loc;
@@ -69,12 +72,16 @@ public class PhysicsPredictions {
             }
         }
 
-        // t = -(v + sqrt(2*a*h - 2*a*p + v^2)) / a
-        double time = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc;
-        return new UncertainEvent(true, time);
+        if (direction != QuadDirection.UP) {
+            // t = -(v + sqrt(2*a*h - 2*a*p + v^2)) / a
+            double time = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc;
+            return new UncertainEvent(true, time);
+        } else {
+            return new UncertainEvent(false, UncertainEvent.NEVER);
+        }
     }
 
-    private static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
+    public static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
         if (height == object.getLocation().z) return new UncertainEvent(true, 0);
         if (object.getVelocity().z == 0 && object.getLocation().z != height)
             return new UncertainEvent(false, UncertainEvent.NEVER);
@@ -140,7 +147,7 @@ public class PhysicsPredictions {
             double timeLeft = time - timeSpent;
 
             WallHitEvent wallHit = arrivalAtAnyWall(ball);
-            UncertainEvent groundHit = arrivalAtHeight(ball, Ball.RADIUS + Arena.TILE_ELEVATION, true);
+            UncertainEvent groundHit = arrivalAtHeightQuadratic(ball, Ball.RADIUS + Arena.TILE_ELEVATION, GRAVITY.z, QuadDirection.DOWN);
 
             // Check if ball hit anything
             if (groundHit.happensAfter(timeLeft) && wallHit.happensAfter(timeLeft)) {
