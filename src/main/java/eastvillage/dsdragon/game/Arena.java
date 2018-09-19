@@ -21,53 +21,39 @@ public class Arena {
     public static final double TILE_SIZE = TILE_WIDTH / Math.sqrt(3);
     public static final double TILE_HEIGHT = TILE_SIZE * 2;
     public static final double TILE_ELEVATION = 2.5;
+    public static final int TILE_COUNT = 140;
 
-    private static final ArrayList<Tile> orderedTiles = new ArrayList<>();
+    private static boolean tilesInitialized = false;
+    private static final Tile[] orderedTiles = HardCodedTiles.tiles;
     private static final HashMap<Hex, Tile> blueTileMap = new HashMap<>();
     private static final HashMap<Hex, Tile> orangeTileMap = new HashMap<>();
 
-    private static void loadFieldInfo(FieldInfo fieldInfo) {
-        synchronized (orderedTiles) {
+    private static void loadHardCodedTiles() {
+        blueTileMap.clear();
+        orangeTileMap.clear();
 
-            orderedTiles.clear();
-            blueTileMap.clear();
-            orangeTileMap.clear();
-
-            int goalCount = fieldInfo.goalsLength();
-            if (goalCount != 140) System.out.println("Goal count: " + goalCount);
-            for (int i = 0; i < goalCount; i++) {
-                Team team = Team.get(fieldInfo.goals(i).teamNum());
-                Vector3 location = Vector3.fromFlatbuffer(fieldInfo.goals(i).location());
-                location = location.sub(new Vector3(0, 128 * team.sign));
-                Hex hex = pointToHex(location);
-                Tile tile = new Tile(hex, fieldInfo.goals(i));
-                orderedTiles.add(tile);
-
-                if (team == Team.BLUE) {
-                    blueTileMap.put(hex, tile);
-                } else {
-                    orangeTileMap.put(hex, tile);
-                }
+        for (int i = 0; i < TILE_COUNT; i++) {
+            Tile tile = orderedTiles[i];
+            if (i < 70) {
+                blueTileMap.put(tile.hex, tile);
+            } else {
+                orangeTileMap.put(tile.hex, tile);
             }
         }
+
+        tilesInitialized = true;
     }
 
     public static void updateTiles(GameTickPacket packet) {
-        if (packet.tileInformationLength() > orderedTiles.size()) {
-            try {
-                loadFieldInfo(RLBotDll.getFieldInfo());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+        if (!tilesInitialized) {
+            loadHardCodedTiles();
         }
 
         try {
-            int tileCount = orderedTiles.size();
             Tile.State[] states = Tile.State.values();
-            for (int i = 0; i < tileCount; i++) {
+            for (int i = 0; i < TILE_COUNT; i++) {
                 int intState = packet.tileInformation(i).tileState();
-                orderedTiles.get(i).state = states[intState];
+                orderedTiles[i].state = states[intState];
             }
         } catch (IndexOutOfBoundsException e) {
             // field info needs reload
@@ -76,7 +62,21 @@ public class Arena {
         }
     }
 
-    public static ArrayList<Tile> getOrderedTiles() {
+    private static boolean missingGoalsWorkAroundPrintDone = false;
+    private static void missingGoalsWorkAroundPrint() {
+        if (!missingGoalsWorkAroundPrintDone) {
+            missingGoalsWorkAroundPrintDone = true;
+
+            for (Tile tile : orderedTiles) {
+                String vec = "" + tile.location.x + ", " + tile.location.y + ", " + tile.location.z;
+                String hex = "" + tile.hex.q + ", " + tile.hex.r;
+                int team = tile.team == Team.BLUE ? 0 : 1;
+                System.out.println("new Tile(new Vector3(" + vec + "), new Hex(" + hex + "), Team.get(" + team + ")),");
+            }
+        }
+    }
+
+    public static Tile[] getOrderedTiles() {
         return orderedTiles;
     }
 
