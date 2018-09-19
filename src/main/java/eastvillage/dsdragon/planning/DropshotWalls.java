@@ -16,7 +16,7 @@ public class DropshotWalls {
             if (ball.getVelocity().y == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
             double dist = Arena.TO_WALL - ball.getLocation().y - Ball.RADIUS;
             double time = dist / ball.getVelocity().y;
-            return new UncertainEvent(time >= 0, time);
+            return new UncertainEvent(time > 0, time);
         }
 
         @Override
@@ -34,7 +34,7 @@ public class DropshotWalls {
             if (ball.getVelocity().y == 0) return new UncertainEvent(false, UncertainEvent.NEVER);
             double dist = Arena.TO_WALL + ball.getLocation().y - Ball.RADIUS;
             double time = -dist / ball.getVelocity().y;
-            return new UncertainEvent(time >= 0, time);
+            return new UncertainEvent(time > 0, time);
         }
 
         @Override

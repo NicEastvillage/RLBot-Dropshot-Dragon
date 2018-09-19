@@ -165,7 +165,7 @@ public class PhysicsPredictions {
                     return moveObjectStraight(ball, time);
                 }
 
-                // Just roll
+                // Just roll to wall
                 timeSpent += wallHit.getTime();
                 moveObjectStraight(ball, wallHit.getTime());
                 bounceBall(ball, wallHit.getNormal());
