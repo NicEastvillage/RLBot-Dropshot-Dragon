@@ -48,23 +48,11 @@ public class PhysicsPredictions {
         double loc = object.getLocation().z;
         double vel = object.getVelocity().z;
 
-        if (Math.abs(height - loc) < 3) return new UncertainEvent(true, 0);
+        boolean insignificantDistance = Math.abs(height - loc) < 4;
+        if (insignificantDistance && Math.abs(vel) < 10) return new UncertainEvent(true, 0);
 
-        double disc = vel * vel - 4 * acc * loc;
-
-        if (disc < 0) {
-            return new UncertainEvent(false, UncertainEvent.NEVER);
-        } else {
-            double t1 = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc; // positive
-            double t2 = (-vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc; // possibly negative
-            double time = t2 < 0.05? t1 : t2;
-            if (Double.isNaN(time)) time = 0;
-            return new UncertainEvent(true, time);
-        }
-
-        /*
         // Check if height is above current z, because then the body may never get there
-        if (height >= loc) {
+        if (height > loc && !insignificantDistance) {
             // Elapsed time when arriving at the turning point
             double turnTime = -vel / acc;
             double turnPointHeight = 0.5 * acc * turnTime * turnTime + vel * turnTime + loc;
@@ -83,7 +71,7 @@ public class PhysicsPredictions {
 
         // t = -(v + sqrt(2*a*h - 2*a*p + v^2)) / a
         double time = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc;
-        return new UncertainEvent(true, time);*/
+        return new UncertainEvent(true, time);
     }
 
     private static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
