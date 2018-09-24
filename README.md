@@ -1,5 +1,5 @@
 # Dropshot Dragon
-A Rocket League offline bot made for Dropshot with the [RLBot framework](rlbot.org).
+A Rocket League offline bot made for Dropshot with the [RLBot framework](www.rlbot.org).
 
 ## Usage Instructions:
 
