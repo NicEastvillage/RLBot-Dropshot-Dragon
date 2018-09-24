@@ -113,13 +113,17 @@ public class PhysicsPredictions {
         return new WallHitEvent(true, earliestTime, walls[wallIndex].getNormal());
     }
 
+    public static double MU = 0.285;
+    public static double A = 0.0003;
+    public static double Y = 2.0;
+
     /** Change the balls velocity and angularVelocity as if just hit a wall with the given surface normal.
      * This method mutates the ball. */
     public static <T extends RLObject> T bounceBall(T ball, Vector3 normal) {
         // See https://samuelpmish.github.io/notes/RocketLeague/ball_bouncing/
-        final double MU = 0.285; // was 0.285 in chip's code
+        /*final double MU = 0.285; // was 0.285 in chip's code
         final double A = 0.0003; // was 0.0003 in chip's code
-        final double Y = 2.0; // was 2.0 in chip's code
+        final double Y = 2.0; // was 2.0 in chip's code*/
 
         Vector3 v_perp = normal.scale(ball.getVelocity().dot(normal));
         Vector3 v_para = ball.getVelocity().sub(v_perp);
@@ -134,7 +138,7 @@ public class PhysicsPredictions {
 
         Vector3 delta_v_perp = v_perp.scale(-1.6);
 
-        ball.setVelocity(ball.getVelocity().add(delta_v_perp));
+        ball.setVelocity(ball.getVelocity().add(delta_v_perp).add(delta_v_para));
         ball.setAngularVelocity(ball.getAngularVelocity().add(delta_v_para.cross(normal).scale(A * Ball.RADIUS)));
         return ball;
     }
