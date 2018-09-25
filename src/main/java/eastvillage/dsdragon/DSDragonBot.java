@@ -63,13 +63,25 @@ public class DSDragonBot implements Bot {
         // State setting
         if (now > lastResetTime + 1000 * 6) {
             lastResetTime = now;
-            GameState state = new GameState()
-                    .withBallState(new BallState()
-                        .withPhysics(new PhysicsState()
-                            .withLocation(new DesiredVector3(0f, -50f, 1200f))
-                            .withVelocity(new DesiredVector3(-200f, 500f, -550f))
-                            .withAngularVelocity(new DesiredVector3(2f, 1.5f, -1.2f))));
-            RLBotDll.setGameState(state.buildPacket());
+            if (input.enemies.get(0).getLocation().y > 0) {
+                // test case
+                GameState state = new GameState()
+                        .withBallState(new BallState()
+                                .withPhysics(new PhysicsState()
+                                        .withLocation(new DesiredVector3(0f, -50f, 1200f))
+                                        .withVelocity(new DesiredVector3(-200f, 500f, -550f))
+                                        .withAngularVelocity(new DesiredVector3(2f, 1.5f, -1.2f))));
+                RLBotDll.setGameState(state.buildPacket());
+            } else {
+                // place ball on top of orange
+                GameState state = new GameState()
+                        .withBallState(new BallState()
+                                .withPhysics(new PhysicsState()
+                                        .withLocation(input.self.getLocation().withZ(115).toRlbotStateVector())
+                                        .withVelocity(new DesiredVector3(0f, 0f, -500f))));
+                RLBotDll.setGameState(state.buildPacket());
+            }
+
         }
         // draw trajectory
         rlbot.vector.Vector3 last = null;
@@ -86,7 +98,9 @@ public class DSDragonBot implements Bot {
         ControlsOutput controls = new ControlsOutput();
         Vector3 ballRelative = input.self.relativeLocation(input.ball.getLocation());
         controls.withSteer(GeneralMoving.smoothSteer(ballRelative.angleXY()));
-        // return controls.withThrottle(1f);
+        if (input.enemies.get(0).getLocation().y < 0) {
+            return controls.withThrottle(1f);
+        }
         return new ControlsOutput();
     }
 
