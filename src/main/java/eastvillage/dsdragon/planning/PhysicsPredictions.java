@@ -12,13 +12,14 @@ public class PhysicsPredictions {
 
     public enum QuadDirection { ANY, DOWN, UP }
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
+    public static double DRAG = 0.0308*0.0308;
 
 
     /** Move the object to the position it will be in some time. The object will be affected by gravity.
      * This method mutates the object. */
     public static <T extends TinyRLObject> T moveFallingObject(T object, double time) {
-        object.setLocation(GRAVITY.scale(0.5 * time * time).add(object.getVelocity().scale(time)).add(object.getLocation()));
-        object.setVelocity(GRAVITY.scale(time).add(object.getVelocity()));
+        object.setLocation(object.getLocation().add(GRAVITY.scale(time).add(object.getVelocity()).scale(time / (DRAG + 1))));
+        object.setVelocity(object.getVelocity().add(GRAVITY.scale(time)).scale(1d / (DRAG + 1)));
         return object;
     }
 

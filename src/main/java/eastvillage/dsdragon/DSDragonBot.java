@@ -49,9 +49,6 @@ public class DSDragonBot implements Bot {
     private ControlsOutput processInput(DataPacket input) {
         // My own ball prediction
         if (input.playerIndex == 1) {
-            PhysicsPredictions.MU = 0.285;
-            PhysicsPredictions.A = 0.0006;
-            PhysicsPredictions.Y = 2.0;
             drawBallPrediction(input.ball, 3.3, 0.05, Color.red);
         }
 
