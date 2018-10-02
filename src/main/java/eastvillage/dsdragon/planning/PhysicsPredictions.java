@@ -12,19 +12,22 @@ public class PhysicsPredictions {
 
     public enum QuadDirection { ANY, DOWN, UP }
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
-    public static double DRAG = 0.0308*0.0308;
+    public static double DRAG = 0.03;
+    public static Vector3 VEL_AT_INF = GRAVITY.scale((1 - DRAG) / DRAG);
 
 
-    /** Move the object to the position it will be in some time. The object will be affected by gravity.
+    /** Move the object to the position it will be in some time. The object will be affected by gravity and drag.
      * This method mutates the object. */
     public static <T extends TinyRLObject> T moveFallingObject(T object, double time) {
-        object.setLocation(object.getLocation().add(GRAVITY.scale(time).add(object.getVelocity()).scale(time / (DRAG + 1))));
-        object.setVelocity(object.getVelocity().add(GRAVITY.scale(time)).scale(1d / (DRAG + 1)));
+        // U * t + (v0 + U) * (1 - d)^(t) * t + z0
+        object.setLocation(VEL_AT_INF.scale(time).add(object.getVelocity().sub(VEL_AT_INF).scale(Math.pow(1 - DRAG, time) * time)).add(object.getLocation()));
+        // U + (v0 - U) * (1 - d)^(t)
+        object.setVelocity(VEL_AT_INF.add(object.getVelocity().sub(VEL_AT_INF).scale(Math.pow(1 - DRAG, time))));
         return object;
     }
 
     /** Move the object to the position it will be in some time with it. The object will NOT be affected by gravity
-     * nor change it's velocity. However, this method mutates the object's location. */
+     * nor drag, nor change it's velocity. However, this method mutates the object's location. */
     public static <T extends TinyRLObject> T moveObjectStraight(T object, double time) {
         object.setLocation(object.getVelocity().scale(time).add(object.getLocation()));
         return object;
@@ -48,23 +51,19 @@ public class PhysicsPredictions {
     /** Returns an event describing when a RLObject reaches a certain height. Use QuadDirection to specify which
      * a certain direction the object should be falling. */
     public static UncertainEvent arrivalAtHeight(TinyRLObject object, double height, QuadDirection direction) {
-        return arrivalAtHeight(object, height, direction, GRAVITY.z);
-    }
-
-    /** Returns an event describing when a RLObject reaches a certain height. Use QuadDirection to specify which
-     * a certain direction the object should be falling. acc is the gravity. */
-    public static UncertainEvent arrivalAtHeight(TinyRLObject object, double height, QuadDirection direction, double acc) {
         double loc = object.getLocation().z;
         double vel = object.getVelocity().z;
+        double acc = GRAVITY.z;
+        double U = VEL_AT_INF.z;
 
         boolean insignificantDistance = Math.abs(height - loc) < 4;
         if (insignificantDistance && Math.abs(vel) < 8) return new UncertainEvent(true, 0);
 
         // Check if height is above current z, because then the body may never get there
         if (height > loc && !insignificantDistance && direction != QuadDirection.DOWN) {
-            // Elapsed time when arriving at the turning point
+            // Elapsed time when arriving at the turning point (if we pretend the ball moves in a perfect parable)
             double turnTime = -vel / acc;
-            double turnPointHeight = 0.5 * acc * turnTime * turnTime + vel * turnTime + loc;
+            double turnPointHeight = moveFallingObject(object.clone(), turnTime).getLocation().z;
 
             // Return false if height is never reached, or was in the past
             if (turnPointHeight < height || turnTime < 0)
@@ -72,22 +71,22 @@ public class PhysicsPredictions {
 
             // The height is reached on the way up
             if (loc < height) {
-                // t = (-v + sqrt(2*a*h - 2*a*p + v^2)) / a
-                double time = (-vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc;
+                // t = (v0 + sqrt(-4dh^2 + 8dhz0 - 4dz^2 + 2gh - 2gz + v^2)) / (2dh - 2dz - g)
+                double time = (vel + Math.sqrt(-4*DRAG*height*height + 8*DRAG*height*loc - 4*DRAG*loc*loc + 2*acc*height - 2*acc*loc + vel*vel)) / (2*DRAG*height - 2*DRAG*loc - acc);
                 return new UncertainEvent(true, time);
             }
         }
 
         if (direction != QuadDirection.UP) {
-            // t = -(v + sqrt(2*a*h - 2*a*p + v^2)) / a
-            double time = -(vel + Math.sqrt(2 * acc * height - 2 * acc * loc + vel * vel)) / acc;
+            // t = -(-v0 + sqrt(-4dh^2 + 8dhz0 - 4dz^2 + 2gh - 2gz + v^2)) / (2dh - 2dz - g)
+            double time = -(-vel + Math.sqrt(-4*DRAG*height*height + 8*DRAG*height*loc - 4*DRAG*loc*loc + 2*acc*height - 2*acc*loc + vel*vel)) / (2*DRAG*height - 2*DRAG*loc - acc);
             return new UncertainEvent(!Double.isNaN(time) && time >= 0, time);
         } else {
             return new UncertainEvent(false, UncertainEvent.NEVER);
         }
     }
 
-    /** Returns an event describing when a RLObject reaches a certain height, assuming it is unaffected by gravity. */
+    /** Returns an event describing when a RLObject reaches a certain height, assuming it is unaffected by gravity and drag. */
     public static UncertainEvent arrivalAtHeightLinear(TinyRLObject object, double height) {
         if (height == object.getLocation().z) return new UncertainEvent(true, 0);
         if (object.getVelocity().z == 0 && object.getLocation().z != height)

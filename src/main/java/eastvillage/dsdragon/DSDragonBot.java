@@ -49,7 +49,12 @@ public class DSDragonBot implements Bot {
     private ControlsOutput processInput(DataPacket input) {
         // My own ball prediction
         if (input.playerIndex == 1) {
+            PhysicsPredictions.DRAG = 0.0305;
+            PhysicsPredictions.VEL_AT_INF = PhysicsPredictions.GRAVITY.scale((1 - PhysicsPredictions.DRAG) / PhysicsPredictions.DRAG);
             drawBallPrediction(input.ball, 3.3, 0.05, Color.red);
+            PhysicsPredictions.DRAG = 0.004;
+            PhysicsPredictions.VEL_AT_INF = PhysicsPredictions.GRAVITY.scale((1 - PhysicsPredictions.DRAG) / PhysicsPredictions.DRAG);
+            drawBallPrediction(input.ball, 3.3, 0.05, Color.yellow);
         }
 
         // Time and recording
