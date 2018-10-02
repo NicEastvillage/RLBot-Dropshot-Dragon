@@ -7,6 +7,7 @@ import eastvillage.dsdragon.planning.PhysicsPredictions;
 import rlbot.Bot;
 import rlbot.ControllerState;
 import rlbot.cppinterop.RLBotDll;
+import rlbot.flat.BallPrediction;
 import rlbot.flat.DesiredGameState;
 import rlbot.flat.GameTickPacket;
 import rlbot.gamestate.*;
@@ -14,6 +15,7 @@ import rlbot.manager.BotLoopRenderer;
 import rlbot.render.Renderer;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DSDragonBot implements Bot {
@@ -46,13 +48,28 @@ public class DSDragonBot implements Bot {
         }
     }
 
+    public void drawDllBallPrediction(int steps, int stepsize, Color color) {
+        try {
+            BallPrediction ballPrediction = RLBotDll.getBallPrediction();
+            rlbot.vector.Vector3 last = null;
+            steps = Math.min(steps, 6 * 60 / stepsize);
+            for (int i = 0; i < steps; i++) {
+                rlbot.vector.Vector3 loc = Vector3.fromFlatbuffer(ballPrediction.slices(i*stepsize).physics().location()).toRlbotVector();
+                if (last != null) {
+                    renderer.drawLine3d(color, last, loc);
+                }
+                last = loc;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private ControlsOutput processInput(DataPacket input) {
         // My own ball prediction
         if (input.playerIndex == 1) {
-            PhysicsPredictions.MU = 0.285;
-            PhysicsPredictions.A = 0.0006;
-            PhysicsPredictions.Y = 2.0;
             drawBallPrediction(input.ball, 3.3, 0.05, Color.red);
+            drawDllBallPrediction(120, 3, Color.white);
         }
 
         // Time and recording
