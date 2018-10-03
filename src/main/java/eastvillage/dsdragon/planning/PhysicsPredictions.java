@@ -12,7 +12,7 @@ public class PhysicsPredictions {
 
     public enum QuadDirection { ANY, DOWN, UP }
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
-    public static double DRAG = 0.03;
+    public static double DRAG = 0.015; // for some reason not 0.0305 as expected
     public static Vector3 VEL_AT_INF = GRAVITY.scale((1 - DRAG) / DRAG);
 
 
@@ -71,16 +71,17 @@ public class PhysicsPredictions {
 
             // The height is reached on the way up
             if (loc < height) {
-                // t = (v0 + sqrt(-4dh^2 + 8dhz0 - 4dz^2 + 2gh - 2gz + v^2)) / (2dh - 2dz - g)
-                double time = (vel + Math.sqrt(-4*DRAG*height*height + 8*DRAG*height*loc - 4*DRAG*loc*loc + 2*acc*height - 2*acc*loc + vel*vel)) / (2*DRAG*height - 2*DRAG*loc - acc);
-                return new UncertainEvent(true, time);
+                // t = -(-v0 + sqrt(-4dh^2 + 8dhz0 - 4dz^2 + 2gh - 2gz + v^2)) / (2dh - 2dz - g)
+                double time = -(-vel + Math.sqrt(-4*DRAG*height*height + 8*DRAG*height*loc - 4*DRAG*loc*loc + 2*acc*height - 2*acc*loc + vel*vel)) / (2*DRAG*height - 2*DRAG*loc - acc);
+                return new UncertainEvent(!Double.isNaN(time) && time >= 0, time);
             }
         }
 
         if (direction != QuadDirection.UP) {
-            // t = -(-v0 + sqrt(-4dh^2 + 8dhz0 - 4dz^2 + 2gh - 2gz + v^2)) / (2dh - 2dz - g)
-            double time = -(-vel + Math.sqrt(-4*DRAG*height*height + 8*DRAG*height*loc - 4*DRAG*loc*loc + 2*acc*height - 2*acc*loc + vel*vel)) / (2*DRAG*height - 2*DRAG*loc - acc);
-            return new UncertainEvent(!Double.isNaN(time) && time >= 0, time);
+
+            // t = (v0 + sqrt(-4dh^2 + 8dhz0 - 4dz^2 + 2gh - 2gz + v^2)) / (2dh - 2dz - g)
+            double time = (vel + Math.sqrt(-4*DRAG*height*height + 8*DRAG*height*loc - 4*DRAG*loc*loc + 2*acc*height - 2*acc*loc + vel*vel)) / (2*DRAG*height - 2*DRAG*loc - acc);
+            return new UncertainEvent(true, time);
         } else {
             return new UncertainEvent(false, UncertainEvent.NEVER);
         }
