@@ -12,7 +12,7 @@ public class PhysicsPredictions {
 
     public enum QuadDirection { ANY, DOWN, UP }
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
-    public static double DRAG = 0.015; // for some reason not 0.0305 as expected
+    public static double DRAG = 0.0002; // for some reason not 0.0305 as expected
     public static Vector3 VEL_AT_INF = GRAVITY.scale((1 - DRAG) / DRAG);
 
 
@@ -114,30 +114,28 @@ public class PhysicsPredictions {
         return new WallHitEvent(true, earliestTime, walls[wallIndex].getNormal());
     }
 
+    public static int bounce = 0;
+
     /** Change the balls velocity and angularVelocity as if just hit a wall with the given surface normal.
      * This method mutates the ball. */
     public static <T extends RLObject> T bounceBall(T ball, Vector3 normal) {
         // See https://samuelpmish.github.io/notes/RocketLeague/ball_bouncing/
         final double MU = 0.285;
-        final double A = 0.0003;
-        final double Y = 2.0;
-        final double CR = 0.6;
+        final double CR = 0.605;
 
         Vector3 v_perp = normal.scale(ball.getVelocity().dot(normal));
         Vector3 v_para = ball.getVelocity().sub(v_perp);
         Vector3 v_spin = normal.cross(ball.getAngularVelocity()).scale(Ball.RADIUS);
-        Vector3 s = v_para.add(v_spin);
 
+        Vector3 s = v_para.sub(v_spin);
         Vector3 delta_v_para = Vector3.ZERO;
         if (s.magnitude() != 0) {
-            double ratio = v_perp.magnitude() / s.magnitude();
-            delta_v_para = s.scale(-MU * Math.min(1d, Y * ratio));
+            delta_v_para = s.scale(-MU);
         }
-
         Vector3 delta_v_perp = v_perp.scale(-(1.0 + CR));
 
         ball.setVelocity(ball.getVelocity().add(delta_v_perp).add(delta_v_para));
-        ball.setAngularVelocity(ball.getAngularVelocity().add(delta_v_para.cross(normal).scale(A * Ball.RADIUS)));
+        ball.setAngularVelocity(ball.getVelocity().cross(normal).scale(1.0 / Ball.RADIUS));
         return ball;
     }
 

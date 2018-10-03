@@ -68,8 +68,8 @@ public class DSDragonBot implements Bot {
     private ControlsOutput processInput(DataPacket input) {
         // My own ball prediction
         if (input.playerIndex == 1) {
-            drawBallPrediction(input.ball, 3.3, 0.05, Color.red);
-            drawDllBallPrediction(120, 3, Color.white);
+            drawBallPrediction(input.ball, 4.3, 0.05, Color.red);
+            //drawDllBallPrediction(120, 3, Color.white);
         }
 
         // Time and recording
@@ -85,7 +85,7 @@ public class DSDragonBot implements Bot {
                 GameState state = new GameState()
                         .withBallState(new BallState()
                                 .withPhysics(new PhysicsState()
-                                        .withLocation(new DesiredVector3(0f, -50f, 1200f))
+                                        .withLocation(new DesiredVector3(0f, -50f, 1000f))
                                         .withVelocity(new DesiredVector3(-200f, 500f, -550f))
                                         .withAngularVelocity(new DesiredVector3(2f, 1.5f, -1.2f))));
                 RLBotDll.setGameState(state.buildPacket());
@@ -98,7 +98,6 @@ public class DSDragonBot implements Bot {
                                         .withVelocity(new DesiredVector3(0f, 0f, -500f))));
                 RLBotDll.setGameState(state.buildPacket());
             }
-
         }
         // draw trajectory
         rlbot.vector.Vector3 last = null;
