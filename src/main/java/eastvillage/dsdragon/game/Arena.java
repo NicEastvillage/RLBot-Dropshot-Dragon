@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class Arena {
 
-    public static final double HEIGHT = 1986;
+    public static final double HEIGHT = 2018;
     public static final double TO_WALL = 4555;
     public static final double TO_CORNER = 2 * TO_WALL / Math.sqrt(3);
     public static final double TO_ROUND_CORNER = 5026;

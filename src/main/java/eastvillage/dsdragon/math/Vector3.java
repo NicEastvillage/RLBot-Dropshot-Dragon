@@ -1,5 +1,7 @@
 package eastvillage.dsdragon.math;
 
+import rlbot.gamestate.DesiredVector3;
+
 import java.util.Objects;
 
 /** A vector with three components: x, y, z */
@@ -31,6 +33,10 @@ public class Vector3 {
 
     public rlbot.vector.Vector3 toRlbotVector() {
         return new rlbot.vector.Vector3((float) -x, (float) y, (float) z);
+    }
+
+    public DesiredVector3 toRlbotStateVector() {
+        return new DesiredVector3((float) -x, (float) y, (float) z);
     }
 
     public Vector3 withX(double x) {
