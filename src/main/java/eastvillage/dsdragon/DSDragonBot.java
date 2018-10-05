@@ -34,6 +34,7 @@ public class DSDragonBot implements Bot {
         lastResetTime = System.currentTimeMillis();
     }
 
+    /** Render the trajectory for the ball using the custom ball prediction in PhysicsPredictions. */
     public void drawBallPrediction(RLObject ball, double duration, double stepsize, Color color) {
         int steps = (int)(duration/stepsize);
         ball = ball.clone();
@@ -48,76 +49,16 @@ public class DSDragonBot implements Bot {
         }
     }
 
-    public void drawDllBallPrediction(int steps, int stepsize, Color color) {
-        try {
-            BallPrediction ballPrediction = RLBotDll.getBallPrediction();
-            rlbot.vector.Vector3 last = null;
-            steps = Math.min(steps, 6 * 60 / stepsize);
-            for (int i = 0; i < steps; i++) {
-                rlbot.vector.Vector3 loc = Vector3.fromFlatbuffer(ballPrediction.slices(i*stepsize).physics().location()).toRlbotVector();
-                if (last != null) {
-                    renderer.drawLine3d(color, last, loc);
-                }
-                last = loc;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private ControlsOutput processInput(DataPacket input) {
         // My own ball prediction
         if (input.playerIndex == 1) {
-            drawBallPrediction(input.ball, 4.3, 0.05, Color.red);
-            //drawDllBallPrediction(120, 3, Color.white);
-        }
-
-        // Time and recording
-        long now = System.currentTimeMillis();
-        int index = (int)(120 * (now - lastResetTime) / 6000d);
-        if (index >= trajectory.size()) trajectory.add(input.ball.getLocation());
-        else trajectory.set(index, input.ball.getLocation());
-        // State setting
-        if (now > lastResetTime + 1000 * 6) {
-            lastResetTime = now;
-            if (input.enemies.get(0).getLocation().y > 0) {
-                // test case
-                GameState state = new GameState()
-                        .withBallState(new BallState()
-                                .withPhysics(new PhysicsState()
-                                        .withLocation(new DesiredVector3(0f, -50f, 1000f))
-                                        .withVelocity(new DesiredVector3(-200f, 900f, 1300f))
-                                        .withAngularVelocity(new DesiredVector3(2f, 1.5f, -1.2f))));
-                RLBotDll.setGameState(state.buildPacket());
-            } else {
-                // place ball on top of orange
-                GameState state = new GameState()
-                        .withBallState(new BallState()
-                                .withPhysics(new PhysicsState()
-                                        .withLocation(input.self.getLocation().withZ(115).toRlbotStateVector())
-                                        .withVelocity(new DesiredVector3(0f, 0f, -500f))));
-                RLBotDll.setGameState(state.buildPacket());
-            }
-        }
-        // draw trajectory
-        rlbot.vector.Vector3 last = null;
-        for (Vector3 vector3 : trajectory) {
-            if (vector3 != null) {
-                rlbot.vector.Vector3 loc = vector3.toRlbotVector();
-                if (last != null) {
-                    renderer.drawLine3d(Color.green, last, loc);
-                }
-                last = loc;
-            }
+            drawBallPrediction(input.ball, 4.0, 0.8, Color.red);
         }
 
         ControlsOutput controls = new ControlsOutput();
         Vector3 ballRelative = input.self.relativeLocation(input.ball.getLocation());
         controls.withSteer(GeneralMoving.smoothSteer(ballRelative.angleXY()));
-        if (input.enemies.get(0).getLocation().y < 0) {
-            return controls.withThrottle(1f);
-        }
-        return new ControlsOutput();
+        return controls.withThrottle(1f);
     }
 
     @Override

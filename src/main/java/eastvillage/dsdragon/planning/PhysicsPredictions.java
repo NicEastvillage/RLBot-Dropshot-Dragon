@@ -120,6 +120,7 @@ public class PhysicsPredictions {
      * This method mutates the ball. */
     public static <T extends RLObject> T bounceBall(T ball, Vector3 normal) {
         // See https://samuelpmish.github.io/notes/RocketLeague/ball_bouncing/
+        // For dropshot the slip velocity becomes zero after the first bounce, so chips model is slightly tweaked
         final double MU = 0.285;
         final double CR = 0.605;
 
