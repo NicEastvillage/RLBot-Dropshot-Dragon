@@ -12,7 +12,7 @@ public class PhysicsPredictions {
 
     public enum QuadDirection { ANY, DOWN, UP }
     public static final Vector3 GRAVITY = Vector3.UNIT_Z.scale(-650);
-    public static double DRAG = 0.0002; // for some reason not 0.0305 as expected
+    public static double DRAG = 0.0305;
     public static Vector3 VEL_AT_INF = GRAVITY.scale((1 - DRAG) / DRAG);
 
 
@@ -62,7 +62,7 @@ public class PhysicsPredictions {
         // Check if height is above current z, because then the body may never get there
         if (height > loc && !insignificantDistance && direction != QuadDirection.DOWN) {
             // Elapsed time when arriving at the turning point (if we pretend the ball moves in a perfect parable)
-            double turnTime = -vel / acc;
+            double turnTime = -vel / (2 * acc);
             double turnPointHeight = moveFallingObject(object.clone(), turnTime).getLocation().z;
 
             // Return false if height is never reached, or was in the past

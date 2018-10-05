@@ -86,7 +86,7 @@ public class DSDragonBot implements Bot {
                         .withBallState(new BallState()
                                 .withPhysics(new PhysicsState()
                                         .withLocation(new DesiredVector3(0f, -50f, 1000f))
-                                        .withVelocity(new DesiredVector3(-200f, 500f, -550f))
+                                        .withVelocity(new DesiredVector3(-200f, 900f, 1300f))
                                         .withAngularVelocity(new DesiredVector3(2f, 1.5f, -1.2f))));
                 RLBotDll.setGameState(state.buildPacket());
             } else {
