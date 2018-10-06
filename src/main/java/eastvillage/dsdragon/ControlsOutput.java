@@ -124,4 +124,16 @@ public class ControlsOutput implements ControllerState {
     public boolean holdHandbrake() {
         return slideDepressed;
     }
+
+    public boolean isJumping() {
+        return jumpDepressed;
+    }
+
+    public boolean isBoosting() {
+        return boostDepressed;
+    }
+
+    public boolean isSliding() {
+        return slideDepressed;
+    }
 }
