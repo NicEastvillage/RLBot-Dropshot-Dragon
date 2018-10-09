@@ -13,4 +13,8 @@ public class RLMath {
         if (value < min) value = min;
         return value;
     }
+
+    public static double lerp(double a, double b, double t) {
+        return (1 - t) * a + t * b;
+    }
 }
