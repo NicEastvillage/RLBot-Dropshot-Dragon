@@ -47,7 +47,7 @@ public class DSDragonBot implements Bot {
     private ControlsOutput processInput(DataPacket data) {
         // My own ball prediction
         if (data.playerIndex == 1) {
-            drawBallPrediction(data.ball, 4.0, 0.8, Color.red);
+            drawBallPrediction(data.ball, 4.0, 0.08, Color.red);
         }
 
         renderer.drawCenteredRectangle3d(data.self.isOnWall ? Color.red : Color.green, data.self.getLocation().toRlbotVector(), 10, 10, true);
