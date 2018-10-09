@@ -14,7 +14,6 @@ public class MovementHelpers {
     }
 
     public static float hardSteer(double angle) {
-        if (Math.abs(angle) > 3.05) return 1f;
         if (angle > 0) return 1f;
         return -1f;
     }

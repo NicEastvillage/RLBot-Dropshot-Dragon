@@ -29,7 +29,7 @@ public class Orientation {
         double noseZ = sp;
 
         double roofX = cr * cy * sp + sr * sy;
-        double roofY = cr * sy * sp - sr * cy;
+        double roofY = - cr * sy * sp + sr * cy;
         double roofZ = cp * cr;
 
         return new Orientation(new Vector3(noseX, noseY, noseZ), new Vector3(roofX, roofY, roofZ));

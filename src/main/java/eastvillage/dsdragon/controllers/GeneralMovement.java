@@ -17,8 +17,7 @@ public class GeneralMovement {
 
         // Get down from wall by choosing a point beneath the car
         if (data.self.isOnWall) {
-            point = data.self.getLocation().flat().lerp(point.flat(), 0.3);
-            data.renderer.drawLine3d(Color.green, data.self.getLocation().toRlbotVector(), point.toRlbotVector());
+            point = data.self.getLocation().flat().lerp(point.flat(), 0.5);
         }
 
         Vector3 carToBall = point.sub(data.self.getLocation());

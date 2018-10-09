@@ -6,7 +6,10 @@ import eastvillage.dsdragon.math.Vector3;
 import eastvillage.dsdragon.planning.PhysicsPredictions;
 import rlbot.Bot;
 import rlbot.ControllerState;
+import rlbot.cppinterop.RLBotDll;
+import rlbot.flat.DesiredGameState;
 import rlbot.flat.GameTickPacket;
+import rlbot.gamestate.*;
 import rlbot.manager.BotLoopRenderer;
 import rlbot.render.Renderer;
 
@@ -18,15 +21,12 @@ public class DSDragonBot implements Bot {
     private final int playerIndex;
     private final Renderer renderer;
 
-    private long lastResetTime = 0;
     private long lastTrajectoryTime = 0;
     private ArrayList<Vector3> trajectory = new ArrayList<>(6 * 10);
 
     public DSDragonBot(int playerIndex) {
         this.playerIndex = playerIndex;
         renderer = BotLoopRenderer.forBotLoop(this);
-
-        lastResetTime = System.currentTimeMillis();
     }
 
     /** Render the trajectory for the ball using the custom ball prediction in PhysicsPredictions. */
@@ -49,8 +49,6 @@ public class DSDragonBot implements Bot {
         if (data.playerIndex == 1) {
             drawBallPrediction(data.ball, 4.0, 0.08, Color.red);
         }
-
-        renderer.drawCenteredRectangle3d(data.self.isOnWall ? Color.red : Color.green, data.self.getLocation().toRlbotVector(), 10, 10, true);
 
         return GeneralMovement.goTowardsPoint(data, data.ball.getLocation(), true, true, 1700, true);
     }
