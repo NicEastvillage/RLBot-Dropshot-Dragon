@@ -67,6 +67,22 @@ public class Vector3 {
         return new Vector3(x * other.x, y * other.y, z * other.z);
     }
 
+    public Vector3 scale(double sx, double sy, double sz) {
+        return new Vector3(x * sx, y * sy, z * sz);
+    }
+
+    public Vector3 scaleX(double sx) {
+        return new Vector3(x * sx, y, z);
+    }
+
+    public Vector3 scaleY(double sy) {
+        return new Vector3(x, y * sy, z);
+    }
+
+    public Vector3 scaleZ(double sz) {
+        return new Vector3(x, y, z * sz);
+    }
+
     public Vector3 scaleToMagnitude(double magnitude) {
         if (isZero()) {
             throw new IllegalStateException("Cannot scale up a vector with length zero!");

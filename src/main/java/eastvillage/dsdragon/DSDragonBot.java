@@ -1,56 +1,36 @@
 package eastvillage.dsdragon;
 
-import eastvillage.dsdragon.controllers.GeneralMovement;
 import eastvillage.dsdragon.game.*;
-import eastvillage.dsdragon.math.Vector3;
-import eastvillage.dsdragon.planning.PhysicsPredictions;
+import eastvillage.dsdragon.states.AggressiveState;
+import eastvillage.dsdragon.states.DefensiveState;
+import eastvillage.dsdragon.states.StateSequencer;
+import eastvillage.dsdragon.util.RenderHelp;
 import rlbot.Bot;
 import rlbot.ControllerState;
-import rlbot.cppinterop.RLBotDll;
-import rlbot.flat.DesiredGameState;
 import rlbot.flat.GameTickPacket;
-import rlbot.gamestate.*;
 import rlbot.manager.BotLoopRenderer;
 import rlbot.render.Renderer;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class DSDragonBot implements Bot {
 
     private final int playerIndex;
     private final Renderer renderer;
-
-    private long lastTrajectoryTime = 0;
-    private ArrayList<Vector3> trajectory = new ArrayList<>(6 * 10);
+    private final StateSequencer states;
 
     public DSDragonBot(int playerIndex) {
         this.playerIndex = playerIndex;
         renderer = BotLoopRenderer.forBotLoop(this);
-    }
-
-    /** Render the trajectory for the ball using the custom ball prediction in PhysicsPredictions. */
-    public void drawBallPrediction(RLObject ball, double duration, double stepsize, Color color) {
-        int steps = (int)(duration/stepsize);
-        ball = ball.clone();
-        rlbot.vector.Vector3 last = null;
-        for (int i = 0; i < steps; i++) {
-            PhysicsPredictions.moveBall(ball, stepsize);
-            rlbot.vector.Vector3 loc = ball.getLocation().toRlbotVector();
-            if (last != null) {
-                renderer.drawLine3d(color, last, loc);
-            }
-            last = loc;
-        }
+        states = new StateSequencer(new AggressiveState(), new DefensiveState());
     }
 
     private ControlsOutput processInput(DataPacket data) {
-        // My own ball prediction
         if (data.playerIndex == 1) {
-            drawBallPrediction(data.ball, 4.0, 0.08, Color.red);
+            // My own ball prediction
+            RenderHelp.drawBallPrediction(data.renderer, data.ball, 4.0, 0.08, Color.red);
         }
-
-        return GeneralMovement.goTowardsPoint(data, data.ball.getLocation(), true, true, 1700, true);
+        return states.process(data);
     }
 
     @Override
