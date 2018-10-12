@@ -3,12 +3,15 @@ package eastvillage.dsdragon.states;
 import eastvillage.dsdragon.ControlsOutput;
 import eastvillage.dsdragon.controllers.GeneralMovement;
 import eastvillage.dsdragon.game.DataPacket;
+import eastvillage.dsdragon.game.RLObject;
 import eastvillage.dsdragon.math.RLMath;
 import eastvillage.dsdragon.math.Vector3;
 import eastvillage.dsdragon.planning.LocatedUncertainEvent;
 import eastvillage.dsdragon.planning.PhysicsPredictions;
 
 public class AggressiveState implements State {
+
+    private boolean ballIsHigh = false;
 
     @Override
     public String getName() {
@@ -27,18 +30,19 @@ public class AggressiveState implements State {
 
     @Override
     public ControlsOutput process(DataPacket data) {
-        final double BIAS = 15;
-        LocatedUncertainEvent ballLanding = PhysicsPredictions.nextBallLanding(data.ball);
-        Vector3 biasedLocation = ballLanding.getLocation().add(new Vector3(0, data.self.team.sign * BIAS, 0));
-        double distance = data.self.getLocation().distance(ballLanding.getLocation());
-        double velocity = distance / ballLanding.getTime();
-        return GeneralMovement.goTowardsPoint(data, biasedLocation, true, true, velocity, false);
+        Vector3 carToBall = data.ball.getLocation().sub(data.self.getLocation());
+        double velToBall = data.self.getVelocity().projectOntoSize(carToBall);
+        double eta = carToBall.magnitude() / velToBall;
+        RLObject movedBall = PhysicsPredictions.moveBall(data.ball.clone(), eta);
+        ballIsHigh = movedBall.getLocation().z > 600;
+        return GeneralMovement.goTowardsPoint(data, movedBall.getLocation(), true, true, 2200, true);
     }
 
     @Override
     public boolean isDone(DataPacket data) {
-        boolean onMySide = RLMath.sign(data.ball.getLocation().y) == data.self.team.sign;
-        boolean amClose = data.self.getLocation().distance(data.ball.getLocation()) < 2000;
-        return !onMySide && !amClose;
+        boolean onEnemySide = RLMath.sign(data.ball.getLocation().y) != data.self.team.sign;
+        boolean amClose = data.self.getLocation().distance(data.ball.getLocation()) < 1000;
+        boolean ballIsBehind = data.self.relativeLocation(data.ball.getLocation()).x < -300;
+        return onEnemySide && (ballIsHigh || ballIsBehind);
     }
 }

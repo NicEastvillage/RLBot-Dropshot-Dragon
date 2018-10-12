@@ -3,6 +3,7 @@ package eastvillage.dsdragon;
 import eastvillage.dsdragon.game.*;
 import eastvillage.dsdragon.states.AggressiveState;
 import eastvillage.dsdragon.states.DefensiveState;
+import eastvillage.dsdragon.states.DribbleState;
 import eastvillage.dsdragon.states.StateSequencer;
 import eastvillage.dsdragon.util.RenderHelp;
 import rlbot.Bot;
@@ -22,7 +23,7 @@ public class DSDragonBot implements Bot {
     public DSDragonBot(int playerIndex) {
         this.playerIndex = playerIndex;
         renderer = BotLoopRenderer.forBotLoop(this);
-        states = new StateSequencer(new AggressiveState(), new DefensiveState());
+        states = new StateSequencer(new AggressiveState(), new DribbleState(), new DefensiveState());
     }
 
     private ControlsOutput processInput(DataPacket data) {

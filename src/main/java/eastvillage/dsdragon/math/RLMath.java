@@ -18,7 +18,7 @@ public class RLMath {
         return (1 - t) * a + t * b;
     }
 
-    public static int sign(double x) {
-        return x > 0 ? 1 : -1;
+    public static int sign(double v) {
+        return v > 0 ? 1 : -1;
     }
 }

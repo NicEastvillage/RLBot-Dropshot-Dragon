@@ -28,7 +28,7 @@ public class DefensiveState implements State {
     public ControlsOutput process(DataPacket data) {
         Vector3 target = data.ball.getLocation().scaleY(-1).withZ(0);
         double distance = data.self.getLocation().distance(target);
-        double velocity = distance / 5;
+        double velocity = distance / 3;
         return GeneralMovement.goTowardsPoint(data, target, false, true, velocity, false);
     }
 
