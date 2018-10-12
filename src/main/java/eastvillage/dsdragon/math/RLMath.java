@@ -17,4 +17,8 @@ public class RLMath {
     public static double lerp(double a, double b, double t) {
         return (1 - t) * a + t * b;
     }
+
+    public static int sign(double v) {
+        return v > 0 ? 1 : -1;
+    }
 }

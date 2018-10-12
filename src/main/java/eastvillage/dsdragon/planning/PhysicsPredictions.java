@@ -1,9 +1,6 @@
 package eastvillage.dsdragon.planning;
 
-import eastvillage.dsdragon.game.Arena;
-import eastvillage.dsdragon.game.Ball;
-import eastvillage.dsdragon.game.RLObject;
-import eastvillage.dsdragon.game.TinyRLObject;
+import eastvillage.dsdragon.game.*;
 import eastvillage.dsdragon.math.Vector3;
 
 import javax.swing.*;
@@ -194,5 +191,14 @@ public class PhysicsPredictions {
         }
 
         return ball;
+    }
+
+    /** Returns an LocatedUncertainEvent that contains the info about the balls next landing. It might not be correct
+     * if the ball hits walls a certain way. */
+    public static LocatedUncertainEvent nextBallLanding(RLObject ball) {
+        RLObject clone = ball.clone();
+        UncertainEvent landing = PhysicsPredictions.arrivalAtHeight(clone, Ball.RADIUS, QuadDirection.DOWN);
+        Vector3 location = moveBall(clone, landing.getTime()).getLocation();
+        return new LocatedUncertainEvent(landing.doesHappen(), landing.getTime(), location);
     }
 }
