@@ -1,4 +1,4 @@
-package eastvillage.dsdragon.states;
+package eastvillage.dsdragon.ai;
 
 import eastvillage.dsdragon.ControlsOutput;
 import eastvillage.dsdragon.game.DataPacket;
@@ -13,7 +13,7 @@ public class StateSequencer {
     private State[] states;
     private boolean firstIteration = true;
 
-    /** The StateSequencer executes the states in sequence. A single State is processed until it is done, when the next
+    /** The StateSequencer executes the ai in sequence. A single State is processed until it is done, when the next
      * State is processed. When the end of the list is reached, it starts over. */
     public StateSequencer(State... states) {
         if (states.length == 0) throw new IllegalArgumentException("StateSequencer must have at least one state.");
@@ -34,7 +34,7 @@ public class StateSequencer {
         data.renderer.drawString3d(curState.getName(), Color.white, data.self.getLocation().toRlbotVector(), 1, 1);
 
         // Go to next state?
-        if (curState.isDone(data)) {
+        if (true) { // TODO
             curState.reset();
             curIndex++;
             if (curIndex >= states.length) curIndex = 0;

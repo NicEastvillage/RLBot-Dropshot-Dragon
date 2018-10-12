@@ -1,12 +1,12 @@
-package eastvillage.dsdragon.states;
+package eastvillage.dsdragon.ai.states;
 
 import eastvillage.dsdragon.ControlsOutput;
+import eastvillage.dsdragon.ai.State;
 import eastvillage.dsdragon.controllers.GeneralMovement;
 import eastvillage.dsdragon.game.DataPacket;
 import eastvillage.dsdragon.game.RLObject;
 import eastvillage.dsdragon.math.RLMath;
 import eastvillage.dsdragon.math.Vector3;
-import eastvillage.dsdragon.planning.LocatedUncertainEvent;
 import eastvillage.dsdragon.planning.PhysicsPredictions;
 
 public class AggressiveState implements State {
@@ -29,6 +29,15 @@ public class AggressiveState implements State {
     }
 
     @Override
+    public double utilityScore(DataPacket data) {
+        double onMySide01 = RLMath.sign(data.ball.getLocation().y) == data.self.team.sign ? 1. : 0.;
+        double amClose01 = data.self.getLocation().distance(data.ball.getLocation()) < 1300 ? 1. : 0.;
+        double ballIsInFront01 = data.self.relativeLocation(data.ball.getLocation()).x > 300 ? 1. : 0.;
+        double boost01 = data.self.boost / 100;
+        return 0.2 * onMySide01 + 0.4 * amClose01 + 0.15 * ballIsInFront01 + 0.25 * boost01;
+    }
+
+    @Override
     public ControlsOutput process(DataPacket data) {
         Vector3 carToBall = data.ball.getLocation().sub(data.self.getLocation());
         double velToBall = data.self.getVelocity().projectOntoSize(carToBall);
@@ -36,13 +45,5 @@ public class AggressiveState implements State {
         RLObject movedBall = PhysicsPredictions.moveBall(data.ball.clone(), eta);
         ballIsHigh = movedBall.getLocation().z > 600;
         return GeneralMovement.goTowardsPoint(data, movedBall.getLocation(), true, true, 2200, true);
-    }
-
-    @Override
-    public boolean isDone(DataPacket data) {
-        boolean onEnemySide = RLMath.sign(data.ball.getLocation().y) != data.self.team.sign;
-        boolean amClose = data.self.getLocation().distance(data.ball.getLocation()) < 1000;
-        boolean ballIsBehind = data.self.relativeLocation(data.ball.getLocation()).x < -300;
-        return onEnemySide && (ballIsHigh || ballIsBehind);
     }
 }

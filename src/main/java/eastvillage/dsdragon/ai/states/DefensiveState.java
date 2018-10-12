@@ -1,6 +1,7 @@
-package eastvillage.dsdragon.states;
+package eastvillage.dsdragon.ai.states;
 
 import eastvillage.dsdragon.ControlsOutput;
+import eastvillage.dsdragon.ai.State;
 import eastvillage.dsdragon.controllers.GeneralMovement;
 import eastvillage.dsdragon.game.DataPacket;
 import eastvillage.dsdragon.math.RLMath;
@@ -25,16 +26,17 @@ public class DefensiveState implements State {
     }
 
     @Override
+    public double utilityScore(DataPacket data) {
+        Vector3 location1sec = PhysicsPredictions.moveBall(data.ball.clone(), 1).getLocation();
+        double ballY01 = 1 / (1 + Math.pow(2, data.self.team.sign * location1sec.y / 400));
+        return ballY01;
+    }
+
+    @Override
     public ControlsOutput process(DataPacket data) {
         Vector3 target = data.ball.getLocation().scaleY(-1).withZ(0);
         double distance = data.self.getLocation().distance(target);
         double velocity = distance / 3;
         return GeneralMovement.goTowardsPoint(data, target, false, true, velocity, false);
-    }
-
-    @Override
-    public boolean isDone(DataPacket data) {
-        Vector3 location = PhysicsPredictions.moveBall(data.ball.clone(), 1).getLocation();
-        return RLMath.sign(location.y) == data.self.team.sign;
     }
 }
