@@ -14,6 +14,14 @@ public class RLMath {
         return value;
     }
 
+    public static double clamp01(double value) {
+        return clamp(value, 0, 1);
+    }
+
+    public static double clamp01(float value) {
+        return clamp(value, 0, 1);
+    }
+
     public static double lerp(double a, double b, double t) {
         return (1 - t) * a + t * b;
     }

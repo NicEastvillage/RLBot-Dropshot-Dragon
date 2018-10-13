@@ -8,11 +8,11 @@ import eastvillage.dsdragon.math.RLMath;
 import eastvillage.dsdragon.math.Vector3;
 import eastvillage.dsdragon.planning.PhysicsPredictions;
 
-public class DefensiveState implements State {
+public class WaitAtHomeState implements State {
 
     @Override
     public String getName() {
-        return "Defensive";
+        return "WaitAtHome";
     }
 
     @Override

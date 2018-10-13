@@ -3,19 +3,20 @@ package eastvillage.dsdragon.ai.states;
 import eastvillage.dsdragon.ControlsOutput;
 import eastvillage.dsdragon.ai.State;
 import eastvillage.dsdragon.controllers.GeneralMovement;
+import eastvillage.dsdragon.game.Ball;
 import eastvillage.dsdragon.game.DataPacket;
 import eastvillage.dsdragon.game.RLObject;
 import eastvillage.dsdragon.math.RLMath;
 import eastvillage.dsdragon.math.Vector3;
 import eastvillage.dsdragon.planning.PhysicsPredictions;
 
-public class AggressiveState implements State {
+public class HardHitState implements State {
 
     private boolean ballIsHigh = false;
 
     @Override
     public String getName() {
-        return "Aggressive";
+        return "HardHit";
     }
 
     @Override
@@ -41,8 +42,8 @@ public class AggressiveState implements State {
     public ControlsOutput process(DataPacket data) {
         Vector3 carToBall = data.ball.getLocation().sub(data.self.getLocation());
         double velToBall = data.self.getVelocity().projectOntoSize(carToBall);
-        double eta = carToBall.magnitude() / velToBall;
-        RLObject movedBall = PhysicsPredictions.moveBall(data.ball.clone(), eta);
+        double eta = (carToBall.magnitude() - Ball.RADIUS) / velToBall;
+        RLObject movedBall = PhysicsPredictions.moveBall(data.ball.clone(), 0.7 * eta);
         ballIsHigh = movedBall.getLocation().z > 600;
         return GeneralMovement.goTowardsPoint(data, movedBall.getLocation(), true, true, 2200, true);
     }

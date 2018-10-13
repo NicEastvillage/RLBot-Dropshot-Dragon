@@ -2,10 +2,8 @@ package eastvillage.dsdragon;
 
 import eastvillage.dsdragon.ai.RootUtilitySystem;
 import eastvillage.dsdragon.ai.UtilitySystem;
+import eastvillage.dsdragon.ai.states.*;
 import eastvillage.dsdragon.game.*;
-import eastvillage.dsdragon.ai.states.AggressiveState;
-import eastvillage.dsdragon.ai.states.DefensiveState;
-import eastvillage.dsdragon.ai.states.DribbleState;
 import eastvillage.dsdragon.util.RenderHelp;
 import rlbot.Bot;
 import rlbot.ControllerState;
@@ -24,7 +22,9 @@ public class DSDragonBot implements Bot {
     public DSDragonBot(int playerIndex) {
         this.playerIndex = playerIndex;
         renderer = BotLoopRenderer.forBotLoop(this);
-        states = new RootUtilitySystem("Behaviour", 0.15, new AggressiveState(), new DribbleState(), new DefensiveState());
+        states = new RootUtilitySystem("Behaviour", 0.2,
+                new AggressiveUtilitySystem("Aggressive", 0.2, new HardHitState(), new DribbleState()),
+                new DefensiveUtilitySystem("Defensive", 0.1, new WaitAtHomeState(), new DribbleState()));
     }
 
     private ControlsOutput processInput(DataPacket data) {

@@ -18,7 +18,11 @@ public abstract class UtilitySystem implements State {
 
     @Override
     public String getName() {
-        return name + " > " + states[currentState];
+        if (currentState != -1) {
+            return name + " > " + states[currentState].getName();
+        } else {
+            return name + " > unknown" ;
+        }
     }
 
     @Override
@@ -28,7 +32,7 @@ public abstract class UtilitySystem implements State {
 
     @Override
     public void init(DataPacket data) {
-
+        process(data);
     }
 
     @Override
@@ -50,16 +54,18 @@ public abstract class UtilitySystem implements State {
         currentState = bestIndex;
 
         if (prevBest != bestIndex) {
-            onStateChange(data, prevBest);
             // Reset previous best. Init new best
             if (prevBest != -1) {
                 states[prevBest].reset();
             }
             states[currentState].init(data);
+            onStateChange(data, prevBest);
         }
 
         return states[currentState].process(data);
     }
 
-    protected abstract void onStateChange(DataPacket data, int prevState);
+    protected void onStateChange(DataPacket data, int prevState) {
+
+    }
 }
