@@ -4,6 +4,8 @@ import eastvillage.dsdragon.ai.RootUtilitySystem;
 import eastvillage.dsdragon.ai.UtilitySystem;
 import eastvillage.dsdragon.ai.states.*;
 import eastvillage.dsdragon.game.*;
+import eastvillage.dsdragon.math.Vector3;
+import eastvillage.dsdragon.planning.PhysicsPredictions;
 import eastvillage.dsdragon.util.RenderHelp;
 import rlbot.Bot;
 import rlbot.ControllerState;
@@ -30,7 +32,13 @@ public class DSDragonBot implements Bot {
     private ControlsOutput processInput(DataPacket data) {
         if (data.playerIndex == 1) {
             // My own ball prediction
-            RenderHelp.drawBallPrediction(data.renderer, data.ball, 4.0, 0.08, Color.red);
+            RenderHelp.drawBallPrediction(data.renderer, data.ball, 4.0, 0.08, Color.magenta);
+            // Highlight tile where ball lands
+            Vector3 ballLandLocation = PhysicsPredictions.nextBallLanding(data.ball).getLocation();
+            Tile tile = Arena.pointToTile(ballLandLocation);
+            if (tile != null) {
+                RenderHelp.highlightTile(renderer, tile, Color.magenta);
+            }
         }
         return states.process(data);
     }
