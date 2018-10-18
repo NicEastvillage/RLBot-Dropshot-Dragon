@@ -3,6 +3,7 @@ package eastvillage.dsdragon.ai.states;
 import eastvillage.dsdragon.ai.State;
 import eastvillage.dsdragon.ai.UtilitySystem;
 import eastvillage.dsdragon.game.Arena;
+import eastvillage.dsdragon.game.Ball;
 import eastvillage.dsdragon.game.DataPacket;
 import eastvillage.dsdragon.game.Tile;
 import eastvillage.dsdragon.math.Vector3;
@@ -24,10 +25,11 @@ public class DefensiveUtilitySystem extends UtilitySystem {
         double ballThreateningEnemy = 0;
         if (tile != null) {
             if (tile.team != data.self.team && data.ball.lastTouchTeam == data.self.team) {
-                ballThreateningEnemy = 1; //TODO vary depending on ball phase
+                if (data.ball.phase == Ball.Phase.ULTRA_CHARGED) ballThreateningEnemy = 1.;
+                else if (data.ball.phase == Ball.Phase.CHARGED) ballThreateningEnemy = 0.4;
             }
         }
 
-        return 0.7 * ballY01 -0.2 * ballThreateningEnemy;
+        return 0.7 * ballY01 + 0.5 * ballThreateningEnemy;
     }
 }
