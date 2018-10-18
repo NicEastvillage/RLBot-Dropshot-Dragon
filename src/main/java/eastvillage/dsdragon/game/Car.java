@@ -7,6 +7,7 @@ public class Car extends RLObject {
     public static final double MAX_VEL_BOOSTING = 2300;
     public static final double MAX_VEL_THROTTLE = 1400;
 
+    public final String name;
     public final Team team;
     public final double boost;
     public final boolean hasWheelContact;
@@ -17,6 +18,7 @@ public class Car extends RLObject {
 
     public Car(rlbot.flat.PlayerInfo playerInfo) {
         super(playerInfo.physics());
+        this.name = playerInfo.name();
         this.team = Team.get(playerInfo.team());
         this.boost = playerInfo.boost();
         this.hasJumped = playerInfo.jumped();

@@ -35,7 +35,8 @@ public class HardHitState implements State {
         double amClose01 = data.self.getLocation().distance(data.ball.getLocation()) < 1300 ? 1. : 0.;
         double ballIsInFront01 = data.self.relativeLocation(data.ball.getLocation()).x > 300 ? 1. : 0.;
         double boost01 = data.self.boost / 100;
-        return 0.2 * onMySide01 + 0.4 * amClose01 + 0.15 * ballIsInFront01 + 0.25 * boost01;
+        double ballHasDiffVel = data.self.getVelocity().distance(data.ball.getVelocity()) > 1200 ? 1. : 0.;
+        return 0.2 * onMySide01 + 0.2 * amClose01 + 0.2 * ballIsInFront01 + 0.2 * boost01 + 0.2 * ballHasDiffVel;
     }
 
     @Override

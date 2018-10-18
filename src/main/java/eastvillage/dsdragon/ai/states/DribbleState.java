@@ -39,9 +39,12 @@ public class DribbleState implements State {
         Vector3 ballLandLocation = PhysicsPredictions.nextBallLanding(data.ball).getLocation();
         Tile tile = Arena.pointToTile(ballLandLocation);
         double protectTile01 = 0;
-        if (tile != null) protectTile01 = tile.team == data.self.team && (tile.state == Tile.State.DAMAGED || tile.state == Tile.State.OPEN) ? 1. : 0.;
+        double dontSave = 0;
+        if (tile != null) protectTile01 = tile.team == data.self.team && (tile.state == Tile.State.OPEN || data.ball.lastTouchTeam != data.self.team) ? 1. : 0.;
+        if (tile != null) dontSave = tile.team != data.self.team && (tile.state == Tile.State.OPEN || data.ball.lastTouchTeam == data.self.team) ? 1. : 0.;
 
-        return RLMath.clamp01(0.1 + 0.3 * onMySide01 + 0.3 * ang01 + 0.3 * dist01 + 0.8 * protectTile01);
+
+        return RLMath.clamp01(0.1 + 0.3 * onMySide01 + 0.3 * ang01 + 0.3 * dist01 + 0.8 * protectTile01 -0.5 * dontSave);
     }
 
     @Override

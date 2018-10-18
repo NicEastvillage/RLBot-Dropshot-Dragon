@@ -1,10 +1,12 @@
 package eastvillage.dsdragon.game;
 
+import rlbot.flat.BallInfo;
 import rlbot.flat.GameTickPacket;
 import rlbot.flat.PlayerInfo;
 import rlbot.render.Renderer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DataPacket {
 
@@ -21,7 +23,6 @@ public class DataPacket {
         this.playerIndex = playerIndex;
         this.renderer = renderer;
 
-        ball = new Ball(packet.ball());
         self = new Car(packet.players(playerIndex));
 
         cars = new ArrayList<>();
@@ -41,5 +42,22 @@ public class DataPacket {
                 }
             }
         }
+
+        ball = new Ball(packet.ball(), findLastTouchTeam(packet.ball()));
+    }
+
+    private Team findLastTouchTeam(BallInfo ballInfo) {
+        try {
+            String touchersName = ballInfo.latestTouch().playerName();
+            for (Car car : cars) {
+                if (car.name.equals(touchersName)) {
+                    return car.team;
+                }
+            }
+        } catch (NullPointerException e) {
+            // no one has touched the ball yet
+        }
+        // defaults to blue
+        return Team.BLUE;
     }
 }
