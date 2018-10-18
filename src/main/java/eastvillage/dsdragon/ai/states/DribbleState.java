@@ -39,21 +39,28 @@ public class DribbleState implements State {
         Vector3 ballLandLocation = PhysicsPredictions.nextBallLanding(data.ball).getLocation();
         Tile tile = Arena.pointToTile(ballLandLocation);
         double protectTile01 = 0;
-        double dontSave = 0;
         if (tile != null) protectTile01 = tile.team == data.self.team && (tile.state == Tile.State.OPEN || data.ball.lastTouchTeam != data.self.team) ? 1. : 0.;
-        if (tile != null) dontSave = tile.team != data.self.team && (tile.state == Tile.State.OPEN || data.ball.lastTouchTeam == data.self.team) ? 1. : 0.;
 
-
-        return RLMath.clamp01(0.1 + 0.3 * onMySide01 + 0.3 * ang01 + 0.3 * dist01 + 0.8 * protectTile01 -0.5 * dontSave);
+        return RLMath.clamp01(0.1 + 0.3 * onMySide01 + 0.3 * ang01 + 0.3 * dist01 + 0.8 * protectTile01);
     }
 
     @Override
     public ControlsOutput process(DataPacket data) {
         final double BIAS = 25;
         LocatedUncertainEvent ballLanding = PhysicsPredictions.nextBallLanding(data.ball);
-        Vector3 biasedLocation = ballLanding.getLocation().add(new Vector3(0, data.self.team.sign * BIAS, 0));
-        double distance = data.self.getLocation().distance(ballLanding.getLocation());
-        double velocity = distance / ballLanding.getTime();
-        return GeneralMovement.goTowardsPoint(data, biasedLocation, true, true, velocity, false);
+        Tile tile = Arena.pointToTile(ballLanding.getLocation());
+
+        if (tile != null && tile.team != data.self.team && tile.state == Tile.State.OPEN) {
+            // dont save - go slow
+            double vel = data.self.getLocation().distance(ballLanding.getLocation()) / 2;
+            return GeneralMovement.goTowardsPoint(data, ballLanding.getLocation(), true, true, vel, false);
+
+        } else {
+            Vector3 biasedLocation = ballLanding.getLocation().add(new Vector3(0, data.self.team.sign * BIAS, 0));
+            double distance = data.self.getLocation().distance(ballLanding.getLocation());
+            double velocity = distance / ballLanding.getTime();
+            return GeneralMovement.goTowardsPoint(data, biasedLocation, true, true, velocity, false);
+        }
+
     }
 }
