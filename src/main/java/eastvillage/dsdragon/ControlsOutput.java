@@ -124,6 +124,11 @@ public class ControlsOutput implements ControllerState {
     public boolean holdHandbrake() {
         return slideDepressed;
     }
+    
+    @Override
+    public boolean holdUseItem() {
+    return false;
+    }
 
     public boolean isJumping() {
         return jumpDepressed;
